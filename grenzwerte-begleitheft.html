@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Begleitheft · Verhalten im Unendlichen (11. Jgst.)</title>
+<style>
+  :root{ --ink:#1a2233; --muted:#5b6678; --line:#c9d2e0; --accent:#3457d5; --ok:#12805c; --okbg:#eaf6f1;
+         --box:#f4f6fb; --warn:#8a5a00; --warnbg:#fff7e6; --warnline:#f0c674;
+         --konv:#12805c; --best:#b5580a; --unb:#7a3bd0; }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{ font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); line-height:1.5; background:#e9edf5; }
+  .sheet{ background:#fff; max-width:820px; margin:18px auto; padding:26px 34px 40px; box-shadow:0 6px 24px rgba(30,45,90,.12); }
+  h1{ font-size:22px; margin:0 0 2px }
+  h2{ font-size:17px; margin:26px 0 8px; padding-bottom:4px; border-bottom:2px solid var(--accent); color:var(--accent) }
+  h3{ font-size:15px; margin:16px 0 6px }
+  h4{ font-size:13.5px; margin:12px 0 4px; color:var(--muted); text-transform:uppercase; letter-spacing:.4px }
+  p{margin:6px 0}
+  .meta{ display:flex; gap:26px; font-size:13px; color:var(--muted); margin:6px 0 14px; flex-wrap:wrap }
+  .meta span{ border-bottom:1px solid var(--line); flex:1; min-width:150px; padding-bottom:2px }
+  .intro{ background:var(--box); border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-size:14px }
+  .hint{ background:var(--warnbg); border:1px solid var(--warnline); border-radius:10px; padding:12px 14px; font-size:14px; margin:12px 0 }
+  .hint b{color:var(--warn)}
+  .merke{ border:2px solid var(--accent); border-radius:12px; padding:12px 15px; margin:12px 0; break-inside:avoid; page-break-inside:avoid }
+  .merke.k{border-color:var(--konv)} .merke.b{border-color:var(--best)} .merke.u{border-color:var(--unb)}
+  .merke .tag{ font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--accent); font-weight:700 }
+  .merke.k .tag{color:var(--konv)} .merke.b .tag{color:var(--best)} .merke.u .tag{color:var(--unb)}
+  .task{ margin:14px 0 8px; padding:14px 16px; border:1px solid var(--line); border-radius:12px; break-inside:avoid; page-break-inside:avoid }
+  .task .nr{ font-weight:700; color:var(--accent) }
+  code,.kbd{ background:#eef2fb; padding:1px 6px; border-radius:5px; font-size:13px; font-family:"SF Mono",Consolas,monospace }
+  table{ width:100%; border-collapse:collapse; margin:8px 0; font-size:14px }
+  th,td{ border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top }
+  th{ background:var(--box); font-weight:600; font-size:13px }
+  td.lbl{ font-weight:600; background:#fbfcfe }
+  .foot{ font-size:12px; color:var(--muted); margin-top:22px; text-align:center }
+  sub{font-size:.75em} sup{font-size:.75em}
+  var{ font-family:"Cambria Math",Georgia,serif; font-style:italic }
+  .ctr{text-align:center}
+  .small{font-size:13px}
+  .muted{color:var(--muted)}
+  b.k{color:var(--konv)} b.b{color:var(--best)} b.u{color:var(--unb)}
+
+  /* ---- Bruch & Limes ---- */
+  .frac{ display:inline-flex; flex-direction:column; text-align:center; vertical-align:middle; margin:0 3px; font-size:.9em }
+  .frac .n{ border-bottom:1.3px solid currentColor; padding:0 5px }
+  .frac .d{ padding:0 5px }
+  .rt{white-space:nowrap} .rt::before{content:"√"}
+  .rt > span{ border-top:1.3px solid currentColor; padding:1px 3px 0 2px; margin-left:-1px; display:inline-block; line-height:1.2 }
+  .lim{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; margin:0 2px; line-height:1 }
+  .lim .op{ font-size:1.02em } .lim .un{ font-size:.62em; color:var(--muted); margin-top:1px }
+
+  /* ---- Lücken zum Ausfüllen ---- */
+  .gap{ display:inline-block; min-width:56px; padding:0 6px; border-bottom:1.6px dotted #8b97ad;
+        color:transparent; font-weight:600; text-align:center; line-height:1.35 }
+  body.show-loesung .gap{ color:var(--ok); border-bottom-color:var(--ok) }
+  .gap.s{ min-width:34px } .gap.w{ min-width:104px } .gap.xw{ min-width:168px } .gap.xxw{min-width:240px}
+  .line{ border-bottom:1px dotted #9aa6bd; height:22px; margin:10px 0 }
+
+  /* ---- b-Schlauch Abbildung ---- */
+  figure{ margin:12px 0; break-inside:avoid; page-break-inside:avoid }
+  figure svg{ width:100%; height:auto; display:block; max-width:560px; margin:0 auto }
+  figcaption{ font-size:12.5px; color:var(--muted); text-align:center; margin-top:4px }
+  .fig .axis{ stroke:#8b97ad; stroke-width:1.2; fill:none }
+  .fig .curve{ stroke:var(--accent); stroke-width:2.4; fill:none }
+  .fig .band{ fill:rgba(18,128,92,.14) }
+  .fig .aline{ stroke:var(--konv); stroke-width:1.4; fill:none }
+  .fig .bline{ stroke:var(--konv); stroke-width:1.2; stroke-dasharray:5 4; fill:none }
+  .fig .x0{ stroke:var(--best); stroke-width:1.4; stroke-dasharray:5 4; fill:none }
+  .fig text{ font-family:-apple-system,"Segoe UI",Arial,sans-serif; font-size:13px; fill:var(--ink) }
+  .fig text.lb{ fill:var(--muted); font-size:12px }
+
+  .toolbar{ position:sticky; top:0; z-index:5; background:#0f1524; color:#fff; padding:10px 16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap }
+  .toolbar button{ font:inherit; font-size:13px; cursor:pointer; border:none; border-radius:8px; padding:7px 13px; background:#2340c8; color:#fff }
+  .toolbar button.ghost{ background:#26304a }
+  .toolbar .sp{ flex:1 }
+  .toolbar a{ color:#9db4ff }
+
+  @media print{
+    body{ background:#fff }
+    .toolbar{ display:none }
+    .sheet{ box-shadow:none; margin:0; max-width:none; padding:0 }
+    .brk{ break-before:page; page-break-before:always }
+    @page{ size:A4; margin:14mm }
+    .task,.merke{ border-color:#bbb }
+    .gap{ border-bottom-color:#666 }
+  }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <strong>Begleitheft · Verhalten im Unendlichen</strong>
+  <button onclick="window.print()">🖨 Drucken / als PDF</button>
+  <button class="ghost" id="lbtn">Lösungen einblenden</button>
+  <span class="sp"></span>
+  <a href="grenzwerte-unendlich.html" target="_blank">→ Lernumgebung öffnen</a>
+</div>
+
+<div class="sheet">
+  <h1>Verhalten im Unendlichen — Begleitheft</h1>
+  <div class="muted small" style="margin-bottom:6px">Mathematik 11 · Der Grenzwertbegriff für x → ±∞</div>
+  <div class="meta"><span>Name:</span><span>Klasse:</span><span>Datum:</span></div>
+
+  <div class="intro">
+    <p style="margin-top:0"><b>So arbeitest du:</b> Öffne die Lernumgebung <code>grenzwerte-unendlich.html</code> und
+      arbeite die Abschnitte 0 – 6 der Reihe nach durch. In diesem Heft hältst du die <b>wichtigsten Ergebnisse</b>
+      fest – fülle die gepunkteten Lücken aus. Die Abschnittsnummern sind hier und in der Lernumgebung dieselben.</p>
+    <p style="margin-bottom:0"><b>Zum Wiederholen:</b> Am Bildschirm kannst du oben die <b>Lösungen einblenden</b> und
+      dich selbst abfragen. Ganz am Ende findest du einen Spickzettel.</p>
+  </div>
+
+  <!-- ============ Einstieg ============ -->
+  <h2>Einstieg — Ein Bad, das abkühlt</h2>
+  <p>Badewasser: <b>35 °C</b>, Umgebung: <b>20 °C</b>. Ein Modell für die Wassertemperatur nach t Minuten:
+    <span class="ctr" style="display:inline-block;margin-left:6px">T(t) = 20 + 15 · 0,85<sup>t</sup></span></p>
+  <p>Frage: <b>Wie verhalten sich die Werte T(t), wenn t immer größer wird?</b> Das Wasser nähert sich der
+    Umgebungstemperatur an: &nbsp; T(t) → <span class="gap s">20</span> °C &nbsp;(erreicht sie im Modell aber nie ganz).</p>
+  <p class="small muted">→ Genau solche Fragen – „Wie verhält sich f(x) für sehr große x?" – untersuchen wir in diesem Heft.</p>
+
+  <!-- ============ 0 ============ -->
+  <h2>0 · Entdecken: Was macht f(x) am Rand?</h2>
+  <p>Läuft x an den Rand des Definitionsbereichs (<b>x → +∞</b> oder <b>x → −∞</b>), kann sich f(x) auf genau
+    <b>drei</b> Arten verhalten:</p>
+  <table>
+    <tr><th style="width:34px">Fall</th><th>Verhalten von f(x)</th></tr>
+    <tr><td class="ctr">1</td><td>f(x) nähert sich <span class="gap w">einem festen Wert</span> <var>a</var> immer weiter an.</td></tr>
+    <tr><td class="ctr">2</td><td>|f(x)| <span class="gap w">wächst über jede Grenze</span> (nach +∞ oder −∞).</td></tr>
+    <tr><td class="ctr">3</td><td>f(x) verhält sich <span class="gap w">unbestimmt</span> (z. B. Pendeln), legt sich auf nichts fest.</td></tr>
+  </table>
+  <p class="small"><b>Trick zum Bestimmen (Einsetzen großer Zahlen):</b> Setze eine sehr große Zahl für x in den
+    Term ein – am Graphen <i>und</i> am Term erkennt man dann das Verhalten. Beispiel: f(x) =
+    <span class="frac"><span class="n">1</span><span class="d">x</span></span> + 2, &nbsp; x = 600 &nbsp;→&nbsp;
+    f(600) = <span class="frac"><span class="n">1</span><span class="d">600</span></span> + 2 ≈
+    <span class="gap s">2,0017</span> &nbsp;→&nbsp; nahe bei a = <span class="gap s">2</span>.</p>
+
+  <!-- ============ 1 ============ -->
+  <h2>1 · Die drei Fälle: Begriffe &amp; Schreibweise</h2>
+
+  <div class="merke k">
+    <div class="tag">Fall 1 · konvergent</div>
+    <p style="margin:6px 0">f <b>konvergiert</b> gegen die Zahl <var>a</var>, wenn f(x) dem Wert <var>a</var>
+      <span class="gap w">beliebig nahe</span> kommt und dann so nahe bleibt. Man nennt <var>a</var> den
+      <span class="gap w">Grenzwert</span>.</p>
+    <p class="ctr" style="font-size:16px;margin:8px 0 0">
+      <span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) = <span class="gap s"><var>a</var></span></p>
+  </div>
+
+  <div class="merke b">
+    <div class="tag">Fall 2 · bestimmt divergent</div>
+    <p style="margin:6px 0">Der Betrag |f(x)| wächst über jede vorgegebene <span class="gap w">Schranke</span>;
+      f(x) strebt eindeutig nach +∞ oder −∞.</p>
+    <p class="ctr" style="font-size:16px;margin:8px 0 0">
+      <span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) = <span class="gap s">+∞</span>
+      &nbsp;bzw.&nbsp; <span class="gap s">−∞</span></p>
+  </div>
+
+  <div class="merke u">
+    <div class="tag">Fall 3 · unbestimmt divergent</div>
+    <p style="margin:6px 0">Alles andere: f(x) nähert sich weder einem Wert an, noch strebt es eindeutig nach ±∞.
+      Es gibt <span class="gap w">keinen Grenzwert</span>.</p>
+    <p class="ctr" style="font-size:16px;margin:8px 0 0">
+      <span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) <span class="gap w">existiert nicht</span></p>
+  </div>
+
+  <p class="small"><b>Für x → −∞</b> schreibt man alles ganz analog, z. B.
+    <span class="lim"><span class="op">lim</span><span class="un">x→−∞</span></span> f(x) = <span class="gap s"><var>a</var></span>.
+    &nbsp;„Divergent" heißt einfach <span class="gap w">nicht konvergent</span>.</p>
+
+  <!-- ============ 2 ============ -->
+  <h2>2 · Grenzwert erkennen — nach Funktionsart</h2>
+  <div class="hint"><b>Wichtig:</b> Mit der Definition <b>berechnet</b> man den Grenzwert <var>a</var> nicht. Man
+    <b>erkennt</b> ihn am Funktionstyp – oder <b>bestimmt</b> ihn durch <b>Einsetzen sehr großer Zahlen</b> in
+    den Term (siehe Abschnitt 0). Später prüft man mit der Definition nur noch nach.</div>
+
+  <table>
+    <tr><th style="width:40%">Funktionsart</th><th>Grenzwert für x → ∞</th></tr>
+    <tr><td class="lbl">Potenzfunktion &nbsp;a·x<sup>n</sup></td>
+        <td><span class="gap xxw">+∞ oder −∞ (Vorfaktor a &amp; Exponent n)</span></td></tr>
+    <tr><td class="lbl">Ganzrationale Funktion<br><span class="muted small">(auch lineare &amp; quadratische)</span></td>
+        <td><span class="gap xxw">+∞ oder −∞ (Vorfaktor &amp; größter Exponent)</span></td></tr>
+    <tr><td class="lbl">Gebrochenrationale Funktion &nbsp;<span class="frac"><span class="n">a</span><span class="d">x + b</span></span> + c</td>
+        <td>Grenzwert = <span class="gap s">c</span></td></tr>
+    <tr><td class="lbl">Trigonometrische Funktion <span class="muted small">(sin, cos)</span></td>
+        <td><span class="gap xw">unbestimmte Divergenz</span></td></tr>
+    <tr><td class="lbl">Exponentialfunktion &nbsp;a·q<sup>x</sup> + d</td>
+        <td><span class="gap xxw">je nach Basis q &amp; Vorfaktor: Grenzwert oder ±∞</span></td></tr>
+  </table>
+
+  <div class="task">
+    <p style="margin-top:0"><span class="nr">Aufgabe 1</span> — Trage den Grenzwert in lim-Schreibweise ein (Zahl, +∞, −∞ oder „existiert nicht"):</p>
+    <table>
+      <tr><td><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> x<sup>3</sup> =</td><td><span class="gap s">+∞</span></td>
+          <td><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> (−x<sup>2</sup> + 4) =</td><td><span class="gap s">−∞</span></td></tr>
+      <tr><td><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> (2x<sup>3</sup> − 6x + 1) =</td><td><span class="gap s">+∞</span></td>
+          <td><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> (<span class="frac"><span class="n">3</span><span class="d">x − 2</span></span> + 1) =</td><td><span class="gap s">1</span></td></tr>
+      <tr><td><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> 0,5<sup>x</sup> =</td><td><span class="gap s">0</span></td>
+          <td><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> sin(x) =</td><td><span class="gap w">existiert nicht</span></td></tr>
+      <tr><td><span class="lim"><span class="op">lim</span><span class="un">x→−∞</span></span> 2<sup>x</sup> =</td><td><span class="gap s">0</span></td>
+          <td><span class="lim"><span class="op">lim</span><span class="un">x→−∞</span></span> x<sup>3</sup> =</td><td><span class="gap s">−∞</span></td></tr>
+    </table>
+  </div>
+
+  <!-- ============ 3 ============ -->
+  <h2>3 · Vorsicht Falle: man sieht nur einen Ausschnitt</h2>
+  <div class="merke">
+    <div class="tag">Merksatz</div>
+    <p style="margin:6px 0">Ein Graph ist nur ein <span class="gap w">Indiz</span>, <b>kein Beweis</b>. Egal wie weit
+      man herauszoomt – man sieht immer nur einen <b>Ausschnitt</b>. Sicherheit gibt erst der
+      <span class="gap w">Funktionsterm</span>.</p>
+    <p style="margin:6px 0">Bei einer ganzrationalen Funktion entscheidet der Summand mit der
+      <span class="gap w">höchsten Potenz</span> über das Verhalten im Unendlichen.</p>
+  </div>
+  <p class="small"><b>Beispiel aus der Lernumgebung:</b> f(x) = −0,0005·x·(x − 40)²·(x − 100) schien im kleinen
+    Ausschnitt gegen 0 zu gehen. Ausmultipliziert entscheidet aber der Vorfaktor
+    <span class="gap s">−0,0005</span> vor <span class="gap s">x<sup>4</sup></span> → Grenzwert
+    <span class="gap s">−∞</span>.</p>
+
+  <!-- ============ 4 ============ -->
+  <h2>4 · Wie nahe? — Ab welchem x ist der Abstand klein genug?</h2>
+  <div class="merke">
+    <div class="tag">Abstand</div>
+    <p style="margin:6px 0">Der Abstand des Funktionswertes f(x) vom Grenzwert <var>a</var> wird berechnet als
+      <span class="ctr" style="display:inline-block;font-size:16px">|<var>f(x)</var> − <var>a</var>|</span>.
+      Der <b>Betrag</b> ist nötig, weil Abstände immer <span class="gap s">positiv</span> sind.</p>
+    <p class="small muted" style="margin:6px 0 0">Weiß man, welcher Wert größer ist, darf man den Betrag weglassen
+      und schreibt gleich <i>das Größere minus das Kleinere</i>.</p>
+  </div>
+
+  <div class="task">
+    <p style="margin-top:0"><span class="nr">Aufgabe 2</span> &nbsp; f(x) = 2 + <span class="frac"><span class="n">1</span><span class="d">x</span></span>, &nbsp; a = 2. &nbsp;
+      Es ist |f(x) − 2| = <span class="frac"><span class="n">1</span><span class="d">x</span></span>. Löse
+      <span class="frac"><span class="n">1</span><span class="d">x</span></span> &lt; b nach x auf:</p>
+    <p class="ctr" style="font-size:15px"><span class="frac"><span class="n">1</span><span class="d">x</span></span> &lt; b
+      &nbsp;⇔&nbsp; x &gt; <span class="gap w"><span class="frac"><span class="n">1</span><span class="d">b</span></span></span></p>
+    <table>
+      <tr><th>Schranke b</th><th>ab x &gt;</th></tr>
+      <tr><td class="ctr">0,1</td><td class="ctr"><span class="gap s">10</span></td></tr>
+      <tr><td class="ctr">0,0001</td><td class="ctr"><span class="gap w">10 000</span></td></tr>
+    </table>
+  </div>
+
+  <div class="task">
+    <p style="margin-top:0"><span class="nr">Aufgabe 3</span> &nbsp; f(x) = 0,5<sup>x</sup>, &nbsp; a = 0. &nbsp;
+      Es ist |f(x) − 0| = 0,5<sup>x</sup>. Löse 0,5<sup>x</sup> &lt; b nach x auf:</p>
+    <p class="ctr" style="font-size:15px">0,5<sup>x</sup> &lt; b &nbsp;⇔&nbsp; x &gt;
+      <span class="gap w">log<sub>0,5</sub>(b)</span></p>
+    <table>
+      <tr><th>Schranke b</th><th>ab x &gt; &nbsp;<span class="muted small">(gerundet)</span></th></tr>
+      <tr><td class="ctr">0,1</td><td class="ctr"><span class="gap s">3,32</span></td></tr>
+      <tr><td class="ctr">0,0001</td><td class="ctr"><span class="gap s">13,29</span></td></tr>
+    </table>
+    <p class="small muted" style="margin-bottom:0">Beobachtung: Je kleiner b, desto <span class="gap s">größer</span>
+      muss x<sub>0</sub> sein – aber es gibt <b>immer</b> ein solches x<sub>0</sub>.</p>
+  </div>
+
+  <!-- ============ 5 ============ -->
+  <h2>5 · Der b-Schlauch — die präzise Definition</h2>
+  <p>„Beliebig nahe" heißt: Der Abstand |f(x) − a| unterschreitet <b>jede</b> noch so kleine Schranke b – und
+    zwar ab einer gewissen Stelle x<sub>0</sub> für immer. Graphisch: der Graph bleibt ab x<sub>0</sub> im
+    <b>b-Schlauch</b> um a.</p>
+
+  <figure>
+    <svg class="fig" viewBox="0 0 600 210" role="img" aria-label="b-Schlauch um den Grenzwert a">
+      <!-- Achsen -->
+      <path class="axis" d="M40 20 V180 M40 180 H540"/>
+      <!-- b-Schlauch (Band) um a=130 -->
+      <rect class="band" x="40" y="112" width="500" height="36"/>
+      <line class="aline" x1="40" y1="130" x2="540" y2="130"/>
+      <line class="bline" x1="40" y1="112" x2="540" y2="112"/>
+      <line class="bline" x1="40" y1="148" x2="540" y2="148"/>
+      <!-- Kurve, die sich a annähert -->
+      <path class="curve" d="M52 34 C 150 130 210 128 540 129"/>
+      <!-- x0: dort, wo die Kurve in den Schlauch eintritt -->
+      <line class="x0" x1="180" y1="20" x2="180" y2="180"/>
+      <!-- Beschriftungen -->
+      <text x="546" y="134" class="lb">a</text>
+      <text x="546" y="116" class="lb">a+b</text>
+      <text x="546" y="152" class="lb">a−b</text>
+      <text x="173" y="196" class="lb">x₀</text>
+      <text x="70" y="60">Graph f</text>
+    </svg>
+    <figcaption>Ab x<sub>0</sub> bleibt der Graph im b-Schlauch: |f(x) − a| &lt; b.</figcaption>
+  </figure>
+
+  <div class="merke k">
+    <div class="tag">Definitions-Upgrade 1 · in Worten</div>
+    <p style="margin:6px 0">f hat für x → ∞ den Grenzwert <var>a</var> genau dann, wenn der <b>Abstand</b> von f(x)
+      zu <var>a</var> <b>ab einem gewissen <span class="gap s">x<sub>0</sub></span></b> jeden noch so kleinen
+      vorgegebenen Wert <span class="gap s">b</span> unterschreitet.</p>
+  </div>
+
+  <div class="merke k">
+    <div class="tag">Definitions-Upgrade 2 · formal</div>
+    <p style="margin:6px 0">f hat für x → ∞ den Grenzwert <var>a</var> genau dann, wenn es <b>zu jedem</b>
+      <var>b</var> &gt; 0 <b>ein</b> x<sub>0</sub> gibt, sodass</p>
+    <p class="ctr" style="font-size:17px;margin:8px 0">
+      <span class="gap w">|f(x) − a| &lt; b</span> &nbsp; für alle &nbsp; <span class="gap w">x &gt; x<sub>0</sub></span></p>
+    <p class="small muted" style="margin:4px 0 0">Kurz: zu jedem b existiert ein x<sub>0</sub>. In Schreibweise:
+      <span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) = <var>a</var>.</p>
+  </div>
+
+  <!-- ============ Spickzettel ============ -->
+  <h2 class="brk">Spickzettel — auf einen Blick</h2>
+  <table>
+    <tr><th style="width:30%">Fall</th><th>Schreibweise &amp; typische Beispiele</th></tr>
+    <tr><td class="lbl"><b class="k">konvergent</b><br><span class="muted small">nähert sich a an</span></td>
+        <td><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) = a &nbsp;·&nbsp;
+          Beispiele: <span class="frac"><span class="n">1</span><span class="d">x</span></span> → 0;&nbsp; c·q<sup>x</sup> (0&lt;q&lt;1) → 0</td></tr>
+    <tr><td class="lbl"><b class="b">bestimmt divergent</b><br><span class="muted small">→ ±∞</span></td>
+        <td><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) = ±∞ &nbsp;·&nbsp;
+          Beispiele: x<sup>n</sup>;&nbsp; <span class="rt"><span>x</span></span>;&nbsp; q<sup>x</sup> (q&gt;1)</td></tr>
+    <tr><td class="lbl"><b class="u">unbestimmt divergent</b><br><span class="muted small">kein Grenzwert</span></td>
+        <td>Grenzwert existiert nicht &nbsp;·&nbsp; Beispiele: sin(x);&nbsp; cos(x)</td></tr>
+  </table>
+  <div class="merke">
+    <div class="tag">Präzise Definition (Kern)</div>
+    <p style="margin:6px 0">Zu <b>jedem</b> b &gt; 0 gibt es ein x<sub>0</sub> mit |f(x) − a| &lt; b für alle
+      x &gt; x<sub>0</sub>. &nbsp; Graphisch: die Kurve bleibt ab x<sub>0</sub> im b-Schlauch um a.</p>
+  </div>
+  <div class="hint" style="margin-top:10px"><b>Zwei Merksätze:</b> ① Für den Grenzwert <var>a</var> sucht man
+    einen <b>Kandidaten</b> (am Funktionstyp erkennen oder große Zahlen einsetzen); mit der exakten Definition
+    <b>prüft</b> man gegebenenfalls, ob er stimmt. ② Ein <b>Graph beweist nichts</b>: man sieht immer nur einen Ausschnitt.</div>
+
+  <div class="foot">Begleitheft „Verhalten im Unendlichen" · Mathematik 11 (LehrplanPLUS Bayern) · zur Lernumgebung <code>grenzwerte-unendlich.html</code></div>
+</div>
+
+<script>
+  const lbtn=document.getElementById('lbtn');
+  lbtn.onclick=()=>{
+    const on=document.body.classList.toggle('show-loesung');
+    lbtn.textContent = on ? 'Lösungen ausblenden' : 'Lösungen einblenden';
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grenzwerte im Unendlichen – Lernumgebung (11. Jgst.)</title>
+<style>
+  :root{
+    --bg:#0f1220; --bg2:#161a2e; --panel:#1c2138; --panel2:#232a48;
+    --ink:#eaf0ff; --muted:#9aa6c8; --accent:#ffcf5c; --accent2:#5cd6ff;
+    --good:#5fe39a; --bad:#ff7a7a; --line:#2c3556; --shadow:0 10px 30px rgba(0,0,0,.45);
+    --konv:#5fe39a; --best:#ff9d5c; --unb:#c69cff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 700px at 70% -10%, #23305e 0%, transparent 55%),
+               radial-gradient(900px 600px at -10% 20%, #2a1f4d 0%, transparent 50%),
+               var(--bg);
+    color:var(--ink); line-height:1.55; min-height:100vh;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:24px 18px 90px}
+  header.top{display:flex;align-items:center;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+  .logo{font-size:34px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+  h1{font-size:26px;margin:0;letter-spacing:.3px}
+  h1 .sub{display:block;font-size:13px;color:var(--muted);font-weight:400;letter-spacing:.5px;text-transform:uppercase;margin-top:2px}
+  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);
+    border-radius:16px;padding:22px;box-shadow:var(--shadow);margin:18px 0}
+  h2{font-size:20px;margin:0 0 4px}
+  h3{font-size:16px;margin:18px 0 6px;color:var(--accent2)}
+  h4{margin:14px 0 4px;font-size:14px}
+  p{margin:8px 0}
+  .muted{color:var(--muted)}
+  .small{font-size:13px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#ffd873,#f5b73c);
+    color:#241a00;border:none;border-radius:12px;padding:11px 18px;font-size:15px;font-weight:700;cursor:pointer;
+    box-shadow:0 6px 16px rgba(245,183,60,.3);transition:transform .08s ease, filter .15s ease}
+  .btn:hover{filter:brightness(1.06)}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;font-weight:600}
+  .btn.small{padding:7px 13px;font-size:13px}
+  .dirtoggle{display:inline-flex;margin-bottom:8px}
+  .dirbtn{padding:7px 15px;font-size:14px;font-weight:600;background:var(--panel2);color:var(--muted);
+    border:1px solid var(--line);cursor:pointer}
+  .dirbtn:first-child{border-radius:10px 0 0 10px}
+  .dirbtn:last-child{border-radius:0 10px 10px 0;border-left:none}
+  .dirbtn.active{background:var(--accent);color:#241a00;font-weight:800;border-color:transparent}
+  .btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.3)}
+  input[type=text]{background:#0c1020;border:1px solid var(--line);color:var(--ink);
+    border-radius:10px;padding:10px 12px;font-size:16px}
+  input[type=text]:focus{outline:2px solid var(--accent2);border-color:transparent}
+  select{background:#0c1020;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:15px}
+  a{color:var(--accent2)}
+  var{font-style:italic;font-family:"Cambria Math",Georgia,serif}
+  sub{font-size:.72em} sup{font-size:.72em}
+
+  /* ---- Mathe-Bausteine ---- */
+  .rt{white-space:nowrap}
+  .rt::before{content:"√";font-size:1.02em}
+  .rt > span{border-top:1.4px solid currentColor;padding:1px 3px 0 2px;margin-left:-1px;display:inline-block;line-height:1.2}
+  .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 3px;font-size:.92em}
+  .frac .n{border-bottom:1.4px solid currentColor;padding:0 5px}
+  .frac .d{padding:0 5px}
+  .lim{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1}
+  .lim .op{font-size:1.05em;font-style:normal}
+  .lim .un{font-size:.66em;color:var(--muted);margin-top:1px}
+
+  /* ---- Navigation ---- */
+  nav.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 6px;position:sticky;top:0;z-index:20;
+    background:rgba(15,18,32,.92);backdrop-filter:blur(8px);padding:10px 0;border-bottom:1px solid var(--line)}
+  .chip{font-size:12.5px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);
+    color:var(--muted);cursor:pointer;user-select:none;transition:all .12s}
+  .chip:hover{color:var(--ink);border-color:var(--accent2)}
+  .chip.active{color:#2a2100;background:var(--accent);border-color:transparent;font-weight:700}
+  .chip.done::after{content:" ✓";color:var(--good);font-weight:700}
+  .chip.active.done::after{color:#1c5c36}
+
+  .defbox{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:14px 16px;margin:12px 0}
+  .defbox .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--accent);font-weight:700}
+  .formula{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--accent2);
+    border-radius:10px;padding:10px 14px;margin:8px 0;font-size:17px}
+  .keybox{background:linear-gradient(180deg,#12243a,#0e1a2e);border:2px solid var(--accent2);
+    border-radius:14px;padding:16px 18px;margin:16px 0;box-shadow:0 0 0 3px rgba(92,214,255,.08)}
+  .keybox .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--accent2);font-weight:700}
+  .keybox .big{text-align:center;font-size:21px;margin:12px 0;color:var(--ink)}
+  .warn{background:#2b1d16;border:1px solid #6b4327;border-left:4px solid #ff9d5c;border-radius:10px;padding:12px 16px;margin:12px 0}
+  .warn .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:#ff9d5c;font-weight:700}
+  .hint{background:#1a2540;border:1px dashed var(--accent2);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:14px;color:#cfe6ff}
+  .solution{background:#12261a;border:1px solid #1f5f3c;border-radius:12px;padding:12px 16px;margin-top:12px;font-size:14.5px}
+  .solution h4{margin:0 0 6px;color:var(--good)}
+  details summary{cursor:pointer;color:var(--accent2);font-weight:600;margin-top:8px;user-select:none}
+  .msg{margin-top:10px;font-weight:600;min-height:22px}
+  .msg.ok{color:var(--good)} .msg.no{color:var(--bad)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .row-btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .hidden{display:none}
+  .center{text-align:center}
+  .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:34px}
+  .kbd{font-family:"SF Mono",Consolas,monospace;background:#0c1020;border:1px solid var(--line);
+    border-radius:6px;padding:2px 6px;font-size:13px}
+  section.step{scroll-margin-top:64px}
+
+  /* ---- Plots ---- */
+  canvas{max-width:100%;border-radius:12px;background:#0c1020;border:1px solid var(--line);display:block;margin:10px auto}
+  .plotwrap{position:relative}
+  .readout{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:6px 0 2px}
+  .valbox{font-family:"SF Mono",Consolas,monospace;background:#0c1020;border:1px solid var(--line);
+    border-radius:8px;padding:6px 12px;font-size:15px;min-width:120px;text-align:center}
+  .valbox b{color:var(--accent2)}
+  .fxbox{background:#0c1020;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:15px;
+    text-align:center;margin:8px auto 0;max-width:100%;overflow-x:auto;white-space:nowrap;color:var(--ink)}
+  .fxbox b{color:var(--accent)}  .fxbox .sub{color:var(--accent2)}
+  .slider-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0}
+  .slider-row label{min-width:132px;font-size:14px}
+  input[type=range]{flex:1;min-width:150px;accent-color:var(--accent)}
+  .sv{font-family:"SF Mono",Consolas,monospace;background:#0c1020;border:1px solid var(--line);
+    border-radius:8px;padding:4px 9px;font-size:14px;min-width:58px;text-align:center;color:var(--accent)}
+  .termbig{font-size:22px;text-align:center;margin:8px 0;min-height:30px}
+
+  /* ---- Zuordnungs-Buttons (3 Fälle) ---- */
+  .cases{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+  @media(max-width:680px){.cases{grid-template-columns:1fr}}
+  .casebtn{text-align:left;background:#0c1020;border:1px solid var(--line);color:var(--ink);
+    border-radius:12px;padding:12px 14px;cursor:pointer;font-size:14px;transition:all .12s}
+  .casebtn:hover:not(:disabled){border-color:var(--accent2);transform:translateY(-1px)}
+  .casebtn .t{font-weight:700;font-size:15px;display:block;margin-bottom:3px}
+  .casebtn.k .t{color:var(--konv)} .casebtn.b .t{color:var(--best)} .casebtn.u .t{color:var(--unb)}
+  .casebtn.pick{outline:2px solid var(--accent)}
+  .casebtn.ok{border-color:var(--good);background:#12261a}
+  .casebtn.no{border-color:var(--bad);background:#2a1414}
+  .casebtn:disabled{cursor:default;opacity:.85}
+
+  /* ---- Quiz ---- */
+  .task{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+  .task .q{font-size:17px;margin-bottom:10px}
+  .opt{display:block;width:100%;text-align:left;background:#0c1020;border:1px solid var(--line);color:var(--ink);
+    border-radius:10px;padding:11px 14px;margin:7px 0;cursor:pointer;font-size:15px;transition:all .12s}
+  .opt:hover:not(:disabled){border-color:var(--accent2)}
+  .opt.ok{background:#12331f;border-color:var(--good)}
+  .opt.no{background:#331414;border-color:var(--bad)}
+  .opt:disabled{cursor:default}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:760px){.grid3{grid-template-columns:1fr}}
+  .badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+    padding:2px 8px;border-radius:999px;margin-left:6px}
+  .badge.k{background:rgba(95,227,154,.15);color:var(--konv);border:1px solid #2f6b48}
+  .badge.b{background:rgba(255,157,92,.15);color:var(--best);border:1px solid #6b4327}
+  .badge.u{background:rgba(198,156,255,.15);color:var(--unb);border:1px solid #4a3a6b}
+  .score{font-size:13px;color:var(--muted)} .score b{color:var(--accent)}
+  .chkrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}
+  .chkrow input[type=text]{width:110px}
+  .ansrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
+  .ansrow .ain{width:120px}
+  .optbtn{background:#0c1020;border:1px solid var(--line);color:var(--ink);border-radius:9px;
+    padding:9px 13px;font-size:15px;cursor:pointer;transition:all .12s}
+  .optbtn:hover:not(:disabled){border-color:var(--accent2)}
+  .optbtn.sel{background:var(--accent);color:#241a00;border-color:transparent;font-weight:700}
+  .optbtn.ok{background:#12331f;border-color:var(--good)}
+  .optbtn.no{background:#331414;border-color:var(--bad)}
+  .optbtn:disabled{cursor:default;opacity:.75}
+  .exgrid{display:grid;grid-template-columns:max-content 1fr;gap:5px 24px;align-items:baseline;
+    margin:4px 0 2px 6px;font-size:14px}
+  .exgrid > div:nth-child(odd){color:var(--accent2)}
+  @media print{ body{background:#fff;color:#000} .card{box-shadow:none;border-color:#bbb;background:#fff} nav.chips,.btn{display:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">∞</div>
+    <div>
+      <h1>Verhalten im Unendlichen
+        <span class="sub">Mathematik 11 · Der Grenzwertbegriff für x → ∞</span>
+      </h1>
+    </div>
+    <button class="btn ghost small" id="resetAll" style="margin-left:auto">↺ zurücksetzen</button>
+  </header>
+
+  <nav class="chips" id="nav"></nav>
+
+  <!-- ============================================================= Einstieg -->
+  <section class="step" id="sEin">
+  <div class="card">
+    <h2>Einstieg: Ein Bad, das abkühlt 🛁</h2>
+
+    <div class="keybox" style="border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,207,92,.08)">
+      <span class="lbl" style="color:var(--accent)">Situation</span>
+      <p style="margin:8px 0 0">In eine Badewanne wird <b>35 °C</b> heißes Wasser eingelassen. Das Badezimmer hat
+        eine Umgebungstemperatur von <b>20 °C</b>. <b>Was passiert mit der Temperatur des Badewassers, wenn man
+        lange genug wartet?</b></p>
+    </div>
+
+    <p>Die Temperaturentwicklung des Badewassers mit der Zeit t (in Minuten) lässt sich modellhaft durch eine
+      Funktion beschreiben:</p>
+    <p class="center" style="font-size:20px;color:var(--accent2)">T(t) = 20 + 15 · 0,85<sup>t</sup></p>
+
+    <div class="plotwrap"><canvas id="introCv" width="640" height="300"></canvas></div>
+    <p class="small muted center">Das Wasser kühlt ab und nähert sich immer mehr der Umgebungstemperatur 20 °C an –
+      erreicht sie in diesem Modell aber nie ganz.</p>
+
+    <div class="defbox">
+      <span class="lbl">Übersetzt in die Sprache der Mathematik</span>
+      <p style="margin:6px 0 0">Die Frage nach der Entwicklung der Wassertemperatur für lange Wartezeiten lautet
+        dann: <b>Wie verhalten sich die Funktionswerte T(t), wenn t immer größer wird?</b></p>
+    </div>
+
+    <p>Ganz allgemein: <b>Wie sich die Funktionswerte f(x) verhalten, wenn x sehr groß wird</b>, ist eine
+      weitere Eigenschaft von Funktionen – und genau die untersuchen wir hier. Die dafür nötigen <b>Begriffe,
+      Schreibweisen und Werkzeuge</b> sind Gegenstand dieser Lernumgebung.</p>
+
+    <div class="center" style="margin-top:14px">
+      <button class="btn" id="einGo">Los geht's – zum Entdecken →</button>
+    </div>
+  </div>
+  </section>
+
+  <!-- ============================================================= s0 -->
+  <section class="step" id="s0">
+  <div class="card">
+    <h2>0 · Entdecken: Was macht f(x) am Rand des Definitionsbereichs?</h2>
+    <p class="muted">Wähle einen dir bekannten Funktionstyp und stelle die Parameter ein. Mit dem Umschalter
+      wählst du, ob du <b>x → +∞</b> (x immer größer) oder <b>x → −∞</b> (x immer kleiner) untersuchst.
+      Mit <b>▶</b> läuft die Stelle x los – du kannst <b>⏸ pausieren</b> und das <b>Tempo</b> einstellen.
+      Beobachte f(x) auf <b>zwei</b> Arten: <b>am Graphen</b> (gelber Punkt + Höhe) und <b>am Term</b> (unter dem
+      Bild wird die aktuelle Zahl für x eingesetzt und ausgerechnet). Ordne das Verhalten anschließend zu.</p>
+
+    <div class="grid2">
+      <div>
+        <div class="slider-row">
+          <label for="expType">Funktionstyp</label>
+          <select id="expType" style="flex:1"></select>
+        </div>
+        <div id="expParams"></div>
+        <div class="termbig" id="expTerm"></div>
+      </div>
+      <div>
+        <div class="center">
+          <div class="dirtoggle" id="dirToggle">
+            <button class="dirbtn active" data-dir="1">x → +∞</button>
+            <button class="dirbtn" data-dir="-1">x → −∞</button>
+          </div>
+        </div>
+        <div class="plotwrap">
+          <canvas id="expCv" width="470" height="300"></canvas>
+        </div>
+        <div class="readout">
+          <div class="valbox">x = <b id="expX">–</b></div>
+        </div>
+        <div class="fxbox" id="expFx">f(x) = …</div>
+        <div class="row" style="justify-content:center;margin-top:8px;gap:8px">
+          <button class="btn" id="expPlay">▶ x immer größer</button>
+          <button class="btn ghost small" id="expPause" disabled>⏸ Pause</button>
+          <button class="btn ghost small" id="expReset">↺ Ansicht</button>
+        </div>
+        <div class="center" style="margin-top:8px">
+          <span class="small muted" style="margin-right:8px">Tempo:</span>
+          <div class="dirtoggle" id="speedToggle">
+            <button class="dirbtn" data-sp="0.5">langsam</button>
+            <button class="dirbtn active" data-sp="1">mittel</button>
+            <button class="dirbtn" data-sp="2">schnell</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Und wie verhält sich f(x)?</h3>
+    <div class="cases">
+      <button class="casebtn k" data-c="konv"><span class="t">nähert sich einem Wert an</span>
+        f(x) kommt einer festen Zahl immer näher.</button>
+      <button class="casebtn b" data-c="best"><span class="t">wächst über jede Grenze</span>
+        |f(x)| wird beliebig groß (nach +∞ oder −∞).</button>
+      <button class="casebtn u" data-c="unb"><span class="t">verhält sich unbestimmt</span>
+        f(x) pendelt bzw. springt, ohne sich festzulegen.</button>
+    </div>
+    <div class="msg" id="expMsg"></div>
+    <p class="small muted">Tipp: Ändere die Parameter (z. B. bei der Exponentialfunktion die Basis q von 0,5 auf 2)
+      und schau, wie sich das Verhalten schlagartig ändert.</p>
+  </div>
+  </section>
+
+  <!-- ============================================================= s1 -->
+  <section class="step" id="s1">
+  <div class="card">
+    <h2>1 · Die drei Fälle, ihre Namen & die Schreibweise</h2>
+    <p>Beim Entdecken hast du gesehen: Läuft x an den Rand (<b>x → +∞</b> oder <b>x → −∞</b>), kann sich
+      f(x) auf genau drei Arten verhalten:</p>
+
+    <div class="defbox" style="border-left-color:var(--konv)">
+      <span class="lbl" style="color:var(--konv)">Fall 1</span>
+      <p style="margin:6px 0">f(x) nähert sich <b>einem festen Wert</b> <var>a</var> immer weiter an und bleibt
+        dann nahe bei ihm.</p>
+    </div>
+
+    <div class="defbox" style="border-left-color:var(--best)">
+      <span class="lbl" style="color:var(--best)">Fall 2</span>
+      <p style="margin:6px 0">Der Betrag |f(x)| <b>wächst über jede vorgegebene Schranke</b> – f(x) strebt
+        eindeutig nach +∞ oder nach −∞.</p>
+    </div>
+
+    <div class="defbox" style="border-left-color:var(--unb)">
+      <span class="lbl" style="color:var(--unb)">Fall 3</span>
+      <p style="margin:6px 0"><b>Alles andere</b>: f(x) legt sich auf gar nichts fest (z. B. dauerndes Pendeln).</p>
+    </div>
+
+    <h3>So sehen die drei Fälle typischerweise aus</h3>
+    <div class="grid3">
+      <div class="center"><canvas id="ill0" width="300" height="190"></canvas><div class="small muted">Fall 1</div></div>
+      <div class="center"><canvas id="ill1" width="300" height="190"></canvas><div class="small muted">Fall 2</div></div>
+      <div class="center"><canvas id="ill2" width="300" height="190"></canvas><div class="small muted">Fall 3</div></div>
+    </div>
+
+    <p style="margin-top:18px">Diese drei Fälle bekommen jetzt <b>Namen</b> und eine kurze <b>Schreibweise</b>.</p>
+
+    <div class="keybox">
+      <span class="lbl">Begriffe und lim-Schreibweise</span>
+      <p style="margin:8px 0 10px"><b>Die Begriffe:</b> Nähert sich f(x) einem festen Wert <var>a</var> beliebig nahe
+        (Fall 1), so heißt f <b>konvergent</b> und <var>a</var> der <b>Grenzwert</b>. Fall 2 heißt
+        <b>bestimmt divergent</b>, Fall 3 <b>unbestimmt divergent</b>.</p>
+      <p style="margin:8px 0 12px"><b>Die Schreibweise:</b> Für x → ∞ kürzt man die drei Fälle mit „lim" ab:</p>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:9px 16px;align-items:center;font-size:16px">
+        <div class="center"><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) = <var>a</var></div>
+        <div><span class="badge k">konvergent</span> <span class="muted small">a ist der Grenzwert · gelesen: „Limes von f(x) für x gegen unendlich gleich a"</span></div>
+        <div class="center"><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) = +∞ &nbsp;<span class="muted small">bzw.</span>&nbsp; −∞</div>
+        <div><span class="badge b">bestimmt divergent</span></div>
+        <div class="center"><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) existiert nicht</div>
+        <div><span class="badge u">unbestimmt divergent</span></div>
+      </div>
+      <p style="margin:12px 0 0"><b>Für x → −∞ ganz analog:</b> man schreibt
+        <span class="lim"><span class="op">lim</span><span class="un">x→−∞</span></span> f(x) = <var>a</var>
+        (bzw. = +∞ / −∞, oder „existiert nicht") – je nachdem, wie sich f(x) verhält, wenn x immer kleiner wird.</p>
+    </div>
+
+    <p class="small muted">„Divergent" heißt einfach „nicht konvergent". Man unterscheidet dann noch, <i>ob</i> es
+      wenigstens eindeutig nach ±∞ läuft (bestimmt) oder gar nicht (unbestimmt).</p>
+  </div>
+  </section>
+
+  <!-- ============================================================= s2 -->
+  <section class="step" id="s2">
+  <div class="card">
+    <h2>2 · Zuordnen üben</h2>
+    <p class="muted">Gib bei jeder Funktion an, was <span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x)
+      ist: Trage entweder den <b>Grenzwert a</b> als Zahl ein oder wähle <b>+∞</b>, <b>−∞</b> bzw.
+      <b>„existiert nicht"</b>. Mit <b>Graph zeigen</b> kannst du dir das Verhalten ansehen.</p>
+    <div id="zTrainer"></div>
+    <div class="score" style="margin-top:8px">Gelöst: <b id="zScore">0</b> / <b id="zTotal">0</b></div>
+
+    <div class="warn">
+      <span class="lbl">Wie findet man den Grenzwert a?</span>
+      <p style="margin:6px 0 4px">Es gibt zwei Vorgehensweisen, um einen <b>Kandidaten</b> für den Grenzwert zu finden:</p>
+      <p style="margin:4px 0"><b>(1) Am Funktionstyp erkennen</b> (siehe Tabelle unten) – z. B. bei
+        <span class="badge k">3 − 1/x</span> „verschwindet" der Bruch 1/x für große x. Also ist a = 3 ein
+        Kandidat. Bei <span class="badge k">0,5<sup>x</sup> − 3</span> wird 0,5<sup>x</sup> für große x fast 0,
+        also ist a = −3 ein Kandidat.</p>
+      <p style="margin:4px 0"><b>(2) Große Zahlen einsetzen</b> – setze eine sehr große Zahl für x in den Term ein
+        (wie beim Entdecken, z. B. f(600)) und lies ab, welchem Wert f(x) nahekommt.</p>
+      <p style="margin:4px 0 0">Später (Kapitel 5) prüft man mit einer <b>exakten Definition</b> nach, ob die
+        Vermutung (der Kandidat) wirklich stimmt.</p>
+    </div>
+
+    <div class="keybox" style="margin-top:16px">
+      <span class="lbl">Woran erkennt man den Grenzwert? – nach Funktionsart</span>
+      <p class="small muted" style="margin:8px 0 2px">Zu jedem Typ Beispiele: <b>links</b> der Funktionsterm,
+        <b>rechts</b> sein Grenzwert in der lim-Schreibweise.</p>
+
+      <p style="margin:14px 0 2px"><b>Potenzfunktion</b> &nbsp;a·x<sup>n</sup> — <span class="muted small">der Vorfaktor a und der Exponent n (gerade oder ungerade) bestimmen, ob +∞ oder −∞</span></p>
+      <div class="exgrid">
+        <div>x<sup>3</sup></div><div><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> x<sup>3</sup> = +∞</div>
+        <div>−2·x<sup>4</sup></div><div><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> (−2·x<sup>4</sup>) = −∞</div>
+      </div>
+
+      <p style="margin:14px 0 2px"><b>Ganzrationale Funktion</b> <span class="muted small">(auch lineare &amp; quadratische)</span> — <span class="muted small">der Vorfaktor und der größte Exponent bestimmen, ob +∞ oder −∞</span></p>
+      <div class="exgrid">
+        <div>2x − 5</div><div><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> (2x − 5) = +∞</div>
+        <div>−x<sup>2</sup> + 4</div><div><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> (−x<sup>2</sup> + 4) = −∞</div>
+        <div>2x<sup>3</sup> − 6x + 1</div><div><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> (2x<sup>3</sup> − 6x + 1) = +∞</div>
+      </div>
+
+      <p style="margin:14px 0 2px"><b>Gebrochenrationale Funktion</b> &nbsp;<span class="frac"><span class="n">a</span><span class="d">x + b</span></span> + c — <span class="muted small">der Grenzwert ist c</span></p>
+      <div class="exgrid">
+        <div><span class="frac"><span class="n">3</span><span class="d">x − 2</span></span> + 1</div><div><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> (<span class="frac"><span class="n">3</span><span class="d">x − 2</span></span> + 1) = 1</div>
+        <div>−<span class="frac"><span class="n">5</span><span class="d">x + 4</span></span></div><div><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> (−<span class="frac"><span class="n">5</span><span class="d">x + 4</span></span>) = 0</div>
+      </div>
+
+      <p style="margin:14px 0 2px"><b>Trigonometrische Funktion</b> <span class="muted small">(sin, cos)</span> — <span class="muted small">unbestimmte Divergenz, kein Grenzwert</span></p>
+      <div class="exgrid">
+        <div>sin(x)</div><div><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> sin(x) &nbsp;existiert nicht</div>
+        <div>2·cos(3x)</div><div><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> 2·cos(3x) &nbsp;existiert nicht</div>
+      </div>
+
+      <p style="margin:14px 0 2px"><b>Exponentialfunktion</b> &nbsp;a·q<sup>x</sup> + d — <span class="muted small">je nach Basis q und Vorfaktor: Grenzwert oder ±∞</span></p>
+      <div class="exgrid">
+        <div>0,5<sup>x</sup> + 2</div><div><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> (0,5<sup>x</sup> + 2) = 2</div>
+        <div>3·2<sup>x</sup></div><div><span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> (3·2<sup>x</sup>) = +∞</div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <!-- ============================================================= s3 -->
+  <section class="step" id="s3">
+  <div class="card">
+    <h2>3 · Vorsicht Falle: man sieht nur einen Ausschnitt</h2>
+    <p>Am Graphen kann man den Grenzwert <b>nie sicher ablesen</b> – man sieht ja immer nur ein endliches
+      Fenster. Jedes Mal, wenn wir weiter herauszoomen, erzählt der Graph hier eine <b>andere</b> Geschichte.</p>
+    <p class="muted">Wir untersuchen den Graphen einer Funktion f für x → ∞. Schau genau hin – und zoome dann
+      Schritt für Schritt heraus. (Den Funktionsterm verraten wir erst am Ende.)</p>
+    <p class="center" id="zoomTerm" style="font-size:17px;color:var(--accent2);min-height:24px;margin:4px 0"></p>
+    <div class="plotwrap"><canvas id="zoomCv" width="640" height="330"></canvas></div>
+    <div class="readout">
+      <div class="valbox">Zoomstufe: <b id="zoomStage">1 / 3</b></div>
+      <div class="valbox">Fenster bis x = <b id="zoomX">38</b></div>
+    </div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="zoomOut">🔍 weiter rauszoomen</button>
+      <button class="btn ghost small" id="zoomBack">↺ zurück zum Anfang</button>
+    </div>
+    <p class="muted small center" id="zoomNote" style="margin-top:6px"></p>
+
+    <div class="task" style="margin-top:16px">
+      <div class="q">Wie verhält sich f(x) <b>wirklich</b> für x → ∞?</div>
+      <div id="zoomQuiz"></div>
+    </div>
+    <div class="hint" style="margin-top:6px"><b>Merke:</b> Ein Graph ist ein <b>Indiz</b>, kein Beweis. Egal wie
+      weit man herauszoomt – man sieht immer nur einen <b>Ausschnitt</b> und kann daraus nie sicher schließen,
+      wie sich f für x → ∞ verhält. Sicherheit gibt erst der <b>Funktionsterm</b>.</div>
+  </div>
+  </section>
+
+  <!-- ============================================================= s4 -->
+  <section class="step" id="s4">
+  <div class="card">
+    <h2>4 · Wie nahe ist „nahe genug"? — Ab welchem x?</h2>
+    <p>Statt vage „nähert sich an" fragen wir jetzt konkret: <b>Ab welchem x ist der Abstand des
+      Funktionswertes f(x) vom Grenzwert a kleiner als</b> eine vorgegebene Schranke b?</p>
+
+    <p>Im Bild ist dieser <b>Abstand</b> der <b>grüne Schlauch</b> der Breite b um a. Gesucht ist der x-Wert
+      <b>x<sub>0</sub></b>, <b>ab dem der Graph für immer im Schlauch bleibt</b> – ab dem der Abstand also
+      dauerhaft kleiner als b ist. Probiere es zuerst spielerisch an den zwei Funktionstypen aus:</p>
+
+    <div class="row" style="justify-content:center;margin-bottom:6px"><select id="naheFn"></select></div>
+    <div class="plotwrap"><canvas id="naheCv" width="640" height="320"></canvas></div>
+    <div class="slider-row">
+      <label for="naheB">Vorgegebene Schranke b:</label>
+      <input type="range" id="naheB" min="0" max="4" step="1" value="2">
+      <span class="sv" id="naheBv">0,1</span>
+    </div>
+    <p class="small muted center" id="naheInfo"></p>
+
+    <h3>Jetzt nachrechnen</h3>
+    <p>Diesen Abstand kann man so berechnen: <b>|f(x) − a|</b>. Der Betrag ist nötig, da Abstände immer
+      positiv sind. Löse nun für den gewählten Funktionstyp die Ungleichung <b>|f(x) − a| &lt; b</b> nach x auf:</p>
+    <div class="row" style="justify-content:center;margin-bottom:6px"><select id="naheFn2"></select></div>
+    <p class="small muted">Tipp: Den <b>Betrag</b> darfst du weglassen, wenn du weißt, welcher der beiden Werte
+      größer ist – dann schreibst du gleich <b>das Größere minus das Kleinere</b>. (Bei f(x) = 2 + 1/x ist
+      z. B. f(x) &gt; 2, also |f(x) − 2| = f(x) − 2 = 1/x.)</p>
+    <div id="naheTasks"></div>
+
+    <div class="hint">Beobachtung: Je kleiner b, desto weiter rechts muss man starten – aber es gibt
+      <b>immer</b> ein solches x. Genau das ist die Idee des nächsten Abschnitts.</div>
+  </div>
+  </section>
+
+  <!-- ============================================================= s5 -->
+  <section class="step" id="s5">
+  <div class="card">
+    <h2>5 · „beliebig nahe" präzise machen — der b-Schlauch</h2>
+    <p>In Abschnitt 1 haben wir den Grenzwert so beschrieben:</p>
+    <div class="defbox">
+      <span class="lbl">Erinnerung aus Abschnitt 1</span>
+      <p style="margin:6px 0">f hat für x → ∞ den Grenzwert <var>a</var> genau dann, wenn mit zunehmendem x der
+        Funktionswert f(x) dem Wert <var>a</var> <b>beliebig nahe</b> kommt.</p>
+    </div>
+    <p><b>Aber was heißt „beliebig nahe"? Kann man das mathematisch ausdrücken?</b> Ja – genau dafür haben wir in
+      <b>Abschnitt 4</b> den <b>Abstand |f(x) − a|</b> benutzt und ausgerechnet, ab welchem x er eine vorgegebene
+      Schranke b unterschreitet. Dieses Ergebnis nutzen wir jetzt, um die Formulierung am Beispiel
+      <b>f(x) = 0,5<sup>x</sup></b> (hier ist <b>a = 0</b>) in zwei Schritten zu schärfen.</p>
+
+    <div class="keybox">
+      <span class="lbl">Definitions-Upgrade 1 · in Worten (mit dem Abstand)</span>
+      <p style="margin:8px 0">f hat für x → ∞ den Grenzwert <var>a</var> genau dann, wenn der <b>Abstand</b> von f(x)
+        zu <var>a</var> <b>ab einem gewissen x<sub>0</sub></b> jeden noch so kleinen vorgegebenen Wert <var>b</var>
+        unterschreitet.</p>
+    </div>
+
+    <p class="muted">Wähle eine Schranke <var>b</var> (die „Schlauchbreite" um a = 0). Der grüne Schlauch ist der
+      Bereich −b &lt; y &lt; b. Ab dem markierten x<sub>0</sub> bleibt der Graph <b>für immer</b> im Schlauch.</p>
+    <div class="plotwrap"><canvas id="schlauchCv" width="640" height="330"></canvas></div>
+    <div class="slider-row">
+      <label for="schlauchB">Schlauchbreite b =</label>
+      <input type="range" id="schlauchB" min="0" max="6" step="1" value="2">
+      <span class="sv" id="schlauchBv">0,1</span>
+    </div>
+    <div class="readout">
+      <div class="valbox">b = <b id="schlauchBout">0,1</b></div>
+      <div class="valbox">passendes x<sub>0</sub> ≈ <b id="schlauchX0">3,32</b></div>
+    </div>
+    <p class="small muted center">Egal wie klein du b machst – es gibt <b>immer</b> ein x<sub>0</sub>, ab dem die
+      Kurve im Schlauch bleibt. Das ist der Kern der Definition.</p>
+
+    <div class="keybox" style="border-color:var(--good);box-shadow:0 0 0 3px rgba(95,227,154,.08)">
+      <span class="lbl" style="color:var(--good)">Definitions-Upgrade 2 · formal (mit dem Betrag)</span>
+      <p style="margin:8px 0">f hat für x → ∞ den Grenzwert <var>a</var> genau dann, wenn es <b>zu jedem</b> noch so
+        kleinen <var>b</var> &gt; 0 <b>ein</b> x<sub>0</sub> gibt, sodass</p>
+      <div class="big" style="font-size:20px">|f(x) − <var>a</var>| &lt; <var>b</var>&nbsp;&nbsp; für alle x &gt; x<sub>0</sub></div>
+      <p class="small muted center" style="margin:4px 0 0">Kurz: <b>zu jedem b existiert ein x<sub>0</sub></b>, ab dem
+        der Abstand kleiner als b ist. In der Schreibweise:
+        <span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) = <var>a</var>.</p>
+    </div>
+
+    <div class="keybox" style="margin-top:14px">
+      <span class="lbl">Wozu die exakte Definition?</span>
+      <p style="margin:8px 0 10px">Mit ihr kann man jetzt <b>nachprüfen, ob ein Kandidat für a geeignet ist</b>
+        (den man in Abschnitt 2 am Funktionstyp erkannt oder durch Einsetzen großer Zahlen bestimmt hat): Man
+        setzt den vermuteten Wert a ein und weist nach, dass sich <b>zu jedem b ein passendes x<sub>0</sub></b>
+        finden lässt – sofern das rechnerisch machbar ist.</p>
+
+      <div style="border-top:1px solid var(--line);padding-top:10px">
+        <p style="margin:0 0 8px"><b>Beispiel: die Badewanne aus dem Einstieg.</b> Wir prüfen den Kandidaten
+          <b>a = 20</b> für &nbsp;T(t) = 20 + 15 · 0,85<sup>t</sup>&nbsp; (b bleibt allgemein):</p>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:7px 14px;align-items:baseline;font-size:15px;margin:6px 0">
+          <div class="muted small">Abstand:</div>
+          <div>|T(t) − 20| = |15 · 0,85<sup>t</sup>| = 15 · 0,85<sup>t</sup>
+            &nbsp;<span class="muted small">(Betrag fällt weg, da stets &gt; 0)</span></div>
+          <div class="muted small">Bedingung:</div>
+          <div>15 · 0,85<sup>t</sup> &lt; <var>b</var></div>
+          <div class="muted small">nach t auflösen:</div>
+          <div>0,85<sup>t</sup> &lt; <span class="frac"><span class="n">b</span><span class="d">15</span></span>
+            &nbsp;⇔&nbsp; t &gt; log<sub>0,85</sub><span style="white-space:nowrap">(<span class="frac"><span class="n">b</span><span class="d">15</span></span>)</span>
+            &nbsp;<span class="muted small">(da ln 0,85 &lt; 0, dreht sich das Zeichen um)</span></div>
+        </div>
+        <p style="margin:8px 0 0">Zu <b>jedem</b> b &gt; 0 gibt es also ein x<sub>0</sub> = log<sub>0,85</sub>(b/15),
+          ab dem der Abstand kleiner als b bleibt. Damit ist bewiesen:
+          <span class="lim"><span class="op">lim</span><span class="un">t→∞</span></span> T(t) = <b>20</b> –
+          der Kandidat stimmt. ✓ <span class="muted">Das Badewasser erreicht die 20 °C nie ganz, kommt ihnen
+          aber beliebig nahe.</span></p>
+      </div>
+    </div>
+
+    <div class="hint">Und die bestimmte Divergenz? Analog: f strebt gegen +∞, wenn es <b>zu jeder</b> noch so
+      großen Schranke S ein x<sub>0</sub> gibt, sodass f(x) &gt; S für alle x &gt; x<sub>0</sub> gilt.</div>
+  </div>
+  </section>
+
+  <!-- ============================================================= s6 -->
+  <section class="step" id="s6">
+  <div class="card">
+    <h2>6 · Spickzettel</h2>
+    <div class="grid2">
+      <div class="defbox" style="border-left-color:var(--konv)">
+        <span class="lbl" style="color:var(--konv)">konvergent</span>
+        <p class="small">f(x) kommt a beliebig nahe und bleibt nahe.<br>
+        <span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) = a<br>
+        Beispiele: 1/x → 0;&nbsp; c·q<sup>x</sup> (0&lt;q&lt;1) → 0</p>
+      </div>
+      <div class="defbox" style="border-left-color:var(--best)">
+        <span class="lbl" style="color:var(--best)">bestimmt divergent</span>
+        <p class="small">|f(x)| wächst über jede Schranke, eindeutig nach ±∞.<br>
+        <span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span> f(x) = ±∞<br>
+        Beispiele: x<sup>n</sup>;&nbsp; <span class="rt"><span>x</span></span>;&nbsp; q<sup>x</sup> (q&gt;1)</p>
+      </div>
+      <div class="defbox" style="border-left-color:var(--unb)">
+        <span class="lbl" style="color:var(--unb)">unbestimmt divergent</span>
+        <p class="small">weder konvergent noch bestimmt divergent (Pendeln).<br>
+        Grenzwert existiert nicht.<br>
+        Beispiele: sin(x);&nbsp; cos(x)</p>
+      </div>
+      <div class="defbox">
+        <span class="lbl">Präzise Definition (Kern)</span>
+        <p class="small">Zu <b>jedem</b> b &gt; 0 gibt es ein x<sub>0</sub> mit<br>
+        |f(x) − a| &lt; b für alle x &gt; x<sub>0</sub>.<br>
+        Graphisch: die Kurve bleibt ab x<sub>0</sub> im b-Schlauch um a.</p>
+      </div>
+    </div>
+    <div class="warn">
+      <span class="lbl">Zwei Merksätze</span>
+      <p class="small" style="margin:6px 0 4px">① Für den Grenzwert a sucht man einen <b>Kandidaten</b>
+        (am Funktionstyp <b>erkennen</b> oder durch Einsetzen sehr großer Zahlen <b>bestimmen</b>); mit der
+        exakten Definition <b>prüft</b> man gegebenenfalls, ob der Kandidat wirklich stimmt.</p>
+      <p class="small" style="margin:4px 0 0">② Ein <b>Graph beweist nichts</b>: man sieht immer nur einen
+        Ausschnitt.</p>
+    </div>
+  </div>
+  </section>
+
+  <p class="foot">Lernumgebung „Verhalten im Unendlichen" · Mathematik 11 (LehrplanPLUS Bayern) · Fortschritt wird lokal im Browser gespeichert.</p>
+</div>
+
+<script>
+/* ================= Helfer ================= */
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const rt = s => `<span class="rt"><span>${s}</span></span>`;
+const fr = (n,d) => `<span class="frac"><span class="n">${n}</span><span class="d">${d}</span></span>`;
+const sup = s => `<sup>${s}</sup>`;
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];} return a; };
+// Zahl deutsch (Komma, Minuszeichen), dec Nachkommastellen, trailing Nullen weg
+function nf(x, dec=2){
+  if(x===Infinity) return '+∞'; if(x===-Infinity) return '−∞';
+  if(!isFinite(x)) return '–';
+  let s=(Math.round(x*10**dec)/10**dec).toFixed(dec);
+  if(s.indexOf('.')>=0) s=s.replace(/0+$/,'').replace(/\.$/,''); // trailing Nullen/Punkt weg
+  if(s==='-0'||s==='') s='0';
+  return s.replace('-','−').replace('.',',');
+}
+const limSpan = '<span class="lim"><span class="op">lim</span><span class="un">x→∞</span></span>';
+
+/* ================= Fortschritt ================= */
+const KEY='grenzwerte11-progress';
+let progress={}; try{ progress=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ progress={}; }
+const saveP=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(progress)); }catch(e){} };
+const markDone=id=>{ if(!progress[id]){ progress[id]=true; saveP(); buildNav(); } };
+
+const SECTIONS=[
+  {id:'sEin',t:'Einstieg'},
+  {id:'s0',t:'0 · Entdecken'},
+  {id:'s1',t:'1 · Fälle & Begriffe'},
+  {id:'s2',t:'2 · Zuordnen'},
+  {id:'s3',t:'3 · Ausschnitt-Falle'},
+  {id:'s4',t:'4 · Wie nahe?'},
+  {id:'s5',t:'5 · b-Schlauch'},
+  {id:'s6',t:'6 · Spickzettel'}
+];
+function buildNav(){
+  const nav=$('#nav');
+  nav.innerHTML=SECTIONS.map(s=>`<div class="chip ${progress[s.id]?'done':''}" data-go="${s.id}">${s.t}</div>`).join('');
+  $$('[data-go]',nav).forEach(c=>c.onclick=()=>document.getElementById(c.dataset.go).scrollIntoView({behavior:'smooth',block:'start'}));
+  highlightNav();
+}
+function highlightNav(){
+  let cur=SECTIONS[0].id;
+  for(const s of SECTIONS){ const r=document.getElementById(s.id).getBoundingClientRect(); if(r.top<140) cur=s.id; }
+  $$('#nav .chip').forEach(c=>c.classList.toggle('active',c.dataset.go===cur));
+}
+window.addEventListener('scroll',highlightNav,{passive:true});
+buildNav();
+$('#resetAll').onclick=()=>{ if(confirm('Fortschritt und Eingaben zurücksetzen?')){ progress={}; saveP(); location.reload(); } };
+
+/* ================= Plot-Engine ================= */
+function makePlot(cv, opts){
+  opts=opts||{};
+  const gridCol=opts.grid||'#1c2340';   // Gitterfarbe (heller einstellbar, z. B. im Entdecken-Plot)
+  const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+  const ML=44, MR=14, MT=14, MB=26;
+  let v={x0:0,x1:10,y0:-2,y1:8};
+  const PX0=ML, PX1=W-MR, PY0=MT, PY1=H-MB;
+  const tX=x=>PX0+(x-v.x0)/(v.x1-v.x0)*(PX1-PX0);
+  const tY=y=>PY0+(v.y1-y)/(v.y1-v.y0)*(PY1-PY0);
+  function niceStep(span,n=6){ const raw=span/n, p=10**Math.floor(Math.log10(raw)), f=raw/p;
+    let m; if(f<1.5)m=1; else if(f<3)m=2; else if(f<7)m=5; else m=10; return m*p; }
+  function setView(nv){ v=nv; }
+  function clear(){ ctx.clearRect(0,0,W,H); ctx.fillStyle='#0c1020'; ctx.fillRect(0,0,W,H); }
+  function axes(){
+    ctx.save();
+    // Gitter
+    const sx=niceStep(v.x1-v.x0), sy=niceStep(v.y1-v.y0);
+    ctx.font='11px "SF Mono",Consolas,monospace'; ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.strokeStyle=gridCol; ctx.lineWidth=1;
+    for(let x=Math.ceil(v.x0/sx)*sx; x<=v.x1+1e-9; x+=sx){ const px=tX(x);
+      ctx.beginPath(); ctx.moveTo(px,PY0); ctx.lineTo(px,PY1); ctx.stroke();
+      ctx.fillStyle='#7d88ad'; ctx.fillText(nf(x, sx<1?2:0), px, PY1+4); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(let y=Math.ceil(v.y0/sy)*sy; y<=v.y1+1e-9; y+=sy){ const py=tY(y);
+      ctx.beginPath(); ctx.moveTo(PX0,py); ctx.lineTo(PX1,py); ctx.stroke();
+      ctx.fillStyle='#7d88ad'; ctx.fillText(nf(y, sy<1?2:0), PX0-5, py); }
+    // Achsen
+    ctx.strokeStyle='#556090'; ctx.lineWidth=1.4;
+    const ay = (v.y0<0&&v.y1>0)? tY(0):PY1;
+    ctx.beginPath(); ctx.moveTo(PX0,ay); ctx.lineTo(PX1,ay); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(axisPx(),PY0); ctx.lineTo(axisPx(),PY1); ctx.stroke();
+    ctx.restore();
+  }
+  // Bildschirm-x-Position der y-Achse (x = 0), sonst nächster Rand
+  function axisPx(){ if(v.x0<=0 && v.x1>=0) return tX(0); return v.x1<0? PX1 : PX0; }
+  function labelBox(cx,ty,text,col,rightAlign){
+    ctx.font='bold 12px "SF Mono",Consolas,monospace';
+    const w=ctx.measureText(text).width+8, h=17, bx=rightAlign? cx-w : cx;
+    ctx.fillStyle='#0c1020'; ctx.fillRect(bx,ty-h/2,w,h);
+    ctx.strokeStyle=col; ctx.lineWidth=1; ctx.strokeRect(bx,ty-h/2,w,h);
+    ctx.fillStyle=col; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(text, bx+4, ty);
+  }
+  function fn(f, col, wid=2.2){
+    ctx.save(); ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=wid;
+    ctx.lineJoin='round'; ctx.rect(PX0,PY0,PX1-PX0,PY1-PY0); ctx.clip();
+    ctx.beginPath();
+    let pen=false, prevPy=null;
+    for(let px=PX0; px<=PX1; px++){
+      const x=v.x0+(px-PX0)/(PX1-PX0)*(v.x1-v.x0);
+      const y=f(x);
+      if(!isFinite(y)){ pen=false; prevPy=null; continue; }
+      const py=tY(y);
+      // Pol / Sprung erkennen
+      if(pen && prevPy!=null && Math.abs(py-prevPy)>(PY1-PY0)*1.5){ pen=false; }
+      if(!pen){ ctx.moveTo(px,py); pen=true; } else { ctx.lineTo(px,py); }
+      prevPy=py;
+    }
+    ctx.stroke(); ctx.restore();
+  }
+  function hline(y, col, label, dash=true){
+    if(y<v.y0||y>v.y1) return;
+    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1.4; if(dash) ctx.setLineDash([6,5]);
+    const py=tY(y); ctx.beginPath(); ctx.moveTo(PX0,py); ctx.lineTo(PX1,py); ctx.stroke();
+    if(label){ ctx.setLineDash([]); ctx.fillStyle=col; ctx.font='12px "SF Mono",Consolas,monospace';
+      ctx.textAlign='left'; ctx.textBaseline='bottom'; ctx.fillText(label, PX0+4, py-2); }
+    ctx.restore();
+  }
+  function vline(x, col, label){
+    if(x<v.x0||x>v.x1) return;
+    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1.4; ctx.setLineDash([5,4]);
+    const px=tX(x); ctx.beginPath(); ctx.moveTo(px,PY0); ctx.lineTo(px,PY1); ctx.stroke();
+    if(label){ ctx.setLineDash([]); ctx.fillStyle=col; ctx.font='12px "SF Mono",Consolas,monospace';
+      ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillText(label, px, PY0+2); }
+    ctx.restore();
+  }
+  function band(lo,hi,col){
+    ctx.save(); ctx.fillStyle=col;
+    const yl=Math.min(Math.max(lo,v.y0),v.y1), yh=Math.min(Math.max(hi,v.y0),v.y1);
+    ctx.fillRect(PX0,tY(yh),PX1-PX0,tY(yl)-tY(yh)); ctx.restore();
+  }
+  function marker(x,y,col){
+    ctx.save();
+    const px=Math.max(PX0,Math.min(PX1,tX(x)));
+    const rawPy=tY(y);
+    let py=rawPy, clamp=0;
+    if(rawPy<PY0){ py=PY0+8; clamp=1; } else if(rawPy>PY1){ py=PY1-8; clamp=-1; }
+    const yAx=axisPx();
+    const zeroPy=Math.max(PY0,Math.min(PY1,tY(0)));   // Bildhöhe der x-Achse (y=0)
+    // Senkrechte „Höhe": Funktionswert als Strecke von der x-Achse bis zum Punkt
+    ctx.strokeStyle=col; ctx.lineWidth=2.6; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(px,zeroPy); ctx.lineTo(px,py); ctx.stroke();
+    ctx.fillStyle=col; ctx.fillRect(px-3.5, zeroPy-1.5, 7, 3);   // Fußmarke auf der x-Achse
+    // horizontale Führung: Punkt -> y-Achse; dort der y-WERT als Zahl
+    if(clamp===0){
+      ctx.strokeStyle=col; ctx.globalAlpha=.4; ctx.setLineDash([4,3]); ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(yAx,py); ctx.stroke();
+      ctx.globalAlpha=1; ctx.setLineDash([]);
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(yAx,py,3.5,0,7); ctx.fill();
+      const lbl=nf(y, Math.abs(y)<20?2:0);
+      if(yAx < W/2) labelBox(yAx+7, py, lbl, col, false);
+      else          labelBox(yAx-7, py, lbl, col, true);
+    }
+    ctx.setLineDash([]);
+    // Punkt bzw. Randpfeil auf dem Graphen
+    ctx.fillStyle=col;
+    if(clamp!==0){
+      ctx.beginPath(); const d=clamp; ctx.moveTo(px,py-7*d); ctx.lineTo(px-6,py+3*d); ctx.lineTo(px+6,py+3*d); ctx.closePath(); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.arc(px,py,5,0,7); ctx.fill();
+      ctx.strokeStyle='#0c1020'; ctx.lineWidth=1.5; ctx.stroke();
+    }
+    ctx.restore();
+  }
+  return {ctx,W,H,v:()=>v,setView,clear,axes,fn,hline,vline,band,marker};
+}
+function animate(dur,onFrame,onDone){
+  const t0=performance.now(); let raf;
+  (function tick(now){ let t=Math.min(1,(now-t0)/dur); onFrame(t);
+    if(t<1) raf=requestAnimationFrame(tick); else onDone&&onDone(); })(t0);
+  return ()=>cancelAnimationFrame(raf);
+}
+
+/* ================= Funktionstypen ================= */
+// coef·body mit Sonderfällen ±1, 0
+function coefT(a, body){ const A=Math.round(a*1000)/1000;
+  if(A===0) return '0'; if(A===1) return body; if(A===-1) return '−'+body; return nf(A)+'·'+body; }
+function plusC(str,d){ const D=Math.round(d*1000)/1000;
+  if(D===0) return str; if(str==='0') return nf(D);
+  return str+(D>0?' + '+nf(D):' − '+nf(-D)); }
+function off(c){ const C=Math.round(c*1000)/1000; return C>0?' − '+nf(C):C<0?' + '+nf(-C):''; }
+
+// Ende-Verhalten eines Potenzterms xⁿ für x → (dir·∞): +∞, außer x→−∞ bei ungeradem n → −∞
+function endSign(dir,n){ return dir>0?1:(n%2===0?1:-1); }
+// Verhalten einer ganzrationalen Funktion: der Term höchsten Grades entscheidet.
+function polyCat(terms, dir){ // terms: [[grad,koeff],...]
+  let lead=null;
+  for(const [deg,coef] of terms){ if(Math.abs(coef)>1e-9 && (lead===null||deg>lead[0])) lead=[deg,coef]; }
+  if(lead===null) return {c:'konv',a:0};
+  if(lead[0]===0) return {c:'konv',a:lead[1]};
+  const s=Math.sign(lead[1])*endSign(dir,lead[0]);
+  return {c:'best',a:s>0?Infinity:-Infinity};
+}
+function polyTerm(terms, v='x'){ // terms hoch → niedrig; v = Variable (für Einsetzen z. B. "600")
+  let parts=[];
+  for(const [deg,coef] of terms){
+    const c=Math.round(coef*1000)/1000; if(c===0) continue;
+    const body = deg===0?'':(deg===1?v:v+sup(deg)), ac=Math.abs(c);
+    parts.push({neg:c<0, piece: deg===0? nf(ac) : ((ac===1?'':nf(ac)+'·')+body)});
+  }
+  if(!parts.length) return '0';
+  let s=(parts[0].neg?'−':'')+parts[0].piece;
+  for(let i=1;i<parts.length;i++) s+=(parts[i].neg?' − ':' + ')+parts[i].piece;
+  return s;
+}
+
+const TYPES=[
+  { id:'lin', name:'Lineare Funktion  m·x + t', pvx:10,
+    params:[{k:'m',lbl:'m (Steigung)',min:-3,max:3,step:.5,def:1},{k:'t',lbl:'t (y-Achse)',min:-4,max:4,step:.5,def:1}],
+    f:p=>x=>p.m*x+p.t,
+    term:(p,v='x')=>polyTerm([[1,p.m],[0,p.t]], v),
+    cat:(p,dir)=>polyCat([[1,p.m],[0,p.t]],dir) },
+
+  { id:'quad', name:'Quadratische Funktion  a·x² + b·x + c', pvx:8,
+    params:[{k:'a',lbl:'a',min:-2,max:2,step:.5,def:1},{k:'b',lbl:'b',min:-4,max:4,step:.5,def:0},{k:'c',lbl:'c',min:-4,max:4,step:.5,def:-3}],
+    f:p=>x=>p.a*x*x+p.b*x+p.c,
+    term:(p,v='x')=>polyTerm([[2,p.a],[1,p.b],[0,p.c]], v),
+    cat:(p,dir)=>polyCat([[2,p.a],[1,p.b],[0,p.c]],dir) },
+
+  { id:'g3', name:'Ganzrationale Fkt. 3. Grades  a·x³ + b·x + c', pvx:6,
+    params:[{k:'a',lbl:'a',min:-1,max:1,step:.5,def:.5},{k:'b',lbl:'b',min:-6,max:6,step:1,def:-4},{k:'c',lbl:'c',min:-4,max:4,step:1,def:0}],
+    f:p=>x=>p.a*x*x*x+p.b*x+p.c,
+    term:(p,v='x')=>polyTerm([[3,p.a],[1,p.b],[0,p.c]], v),
+    cat:(p,dir)=>polyCat([[3,p.a],[1,p.b],[0,p.c]],dir) },
+
+  { id:'g4', name:'Ganzrationale Fkt. 4. Grades  a·x⁴ + b·x² + c', pvx:5,
+    params:[{k:'a',lbl:'a',min:-1,max:1,step:.5,def:.5},{k:'b',lbl:'b',min:-6,max:6,step:1,def:-5},{k:'c',lbl:'c',min:-4,max:4,step:1,def:0}],
+    f:p=>x=>p.a*x*x*x*x+p.b*x*x+p.c,
+    term:(p,v='x')=>polyTerm([[4,p.a],[2,p.b],[0,p.c]], v),
+    cat:(p,dir)=>polyCat([[4,p.a],[2,p.b],[0,p.c]],dir) },
+
+  { id:'g5', name:'Ganzrationale Fkt. 5. Grades  a·x⁵ + b·x³ + c·x', pvx:4,
+    params:[{k:'a',lbl:'a',min:-1,max:1,step:.25,def:.25},{k:'b',lbl:'b',min:-4,max:4,step:.5,def:-2},{k:'c',lbl:'c',min:-6,max:6,step:1,def:0}],
+    f:p=>x=>p.a*x**5+p.b*x**3+p.c*x,
+    term:(p,v='x')=>polyTerm([[5,p.a],[3,p.b],[1,p.c]], v),
+    cat:(p,dir)=>polyCat([[5,p.a],[3,p.b],[1,p.c]],dir) },
+
+  { id:'rez', name:'Gebrochenrationale Fkt.  a/(x−c) + d', pvx:10,
+    params:[{k:'a',lbl:'a',min:-4,max:4,step:.5,def:2},{k:'c',lbl:'c',min:-3,max:3,step:.5,def:0},{k:'d',lbl:'d',min:-3,max:3,step:.5,def:1}],
+    f:p=>x=>p.a/(x-p.c)+p.d,
+    term:(p,v='x')=>{ let body=fr(nf(Math.abs(p.a)), v+off(p.c)); let s=p.a===0?'0':(p.a<0?'−':'')+body; return plusC(s,p.d); },
+    cat:(p,dir)=>({c:'konv',a:p.d}) },
+
+  { id:'exp', name:'Exponentialfunktion  a·qˣ + d', pvx:10,
+    params:[{k:'a',lbl:'a',min:-3,max:3,step:.5,def:1},{k:'q',lbl:'q (Basis)',min:.2,max:3,step:.1,def:.5},{k:'d',lbl:'d',min:-3,max:3,step:.5,def:0}],
+    f:p=>x=>p.a*Math.pow(p.q,x)+p.d,
+    term:(p,v='x')=>plusC(coefT(p.a, nf(p.q)+sup(v)), p.d),
+    cat:(p,dir)=>{ if(Math.abs(p.q-1)<1e-9) return {c:'konv',a:p.a+p.d};
+      if(p.a===0) return {c:'konv',a:p.d};
+      const grows = dir>0 ? p.q>1 : p.q<1; // strebt qˣ gegen ∞ ?
+      return grows ? {c:'best',a:p.a>0?Infinity:-Infinity} : {c:'konv',a:p.d}; } },
+
+  { id:'wurz', name:'Wurzelfunktion  a·√x + d', pvx:12, posOnly:true,
+    params:[{k:'a',lbl:'a',min:-3,max:3,step:.5,def:1},{k:'d',lbl:'d',min:-3,max:3,step:.5,def:0}],
+    f:p=>x=>x<0?NaN:p.a*Math.sqrt(x)+p.d,
+    term:(p,v='x')=>plusC(coefT(p.a, rt(v)), p.d),
+    cat:(p,dir)=> p.a===0?{c:'konv',a:p.d}:{c:'best',a:p.a>0?Infinity:-Infinity} },
+
+  { id:'sin', name:'Sinusfunktion  a·sin(b·x) + d', pvx:16,
+    params:[{k:'a',lbl:'a',min:.5,max:3,step:.5,def:1.5},{k:'b',lbl:'b',min:.2,max:2,step:.1,def:.5},{k:'d',lbl:'d',min:-3,max:3,step:.5,def:0}],
+    f:p=>x=>p.a*Math.sin(p.b*x)+p.d,
+    term:(p,v='x')=>plusC(coefT(p.a,'sin('+coefT(p.b,v)+')'), p.d),
+    cat:(p,dir)=> p.a===0?{c:'konv',a:p.d}:{c:'unb',a:null} },
+
+  { id:'damp', name:'a · 0,85ˣ · sin(b·x) + d', pvx:16,
+    params:[{k:'a',lbl:'a',min:1,max:3,step:.5,def:2.5},{k:'b',lbl:'b',min:.3,max:1.5,step:.1,def:.8},{k:'d',lbl:'d',min:-2,max:2,step:.5,def:0}],
+    f:p=>x=>p.a*Math.pow(.85,x)*Math.sin(p.b*x)+p.d,
+    term:(p,v='x')=>plusC(coefT(p.a, '0,85'+sup(v)+'·sin('+coefT(p.b,v)+')'), p.d),
+    cat:(p,dir)=> dir>0?{c:'konv',a:p.d}:{c:'unb',a:null} },
+
+  { id:'oscg', name:'a · x · sin(b·x)', pvx:16,
+    params:[{k:'a',lbl:'a',min:.1,max:1.5,step:.1,def:.5},{k:'b',lbl:'b',min:.2,max:2,step:.1,def:1}],
+    f:p=>x=>p.a*x*Math.sin(p.b*x),
+    term:(p,v='x')=>coefT(p.a, v+'·sin('+coefT(p.b,v)+')'),
+    cat:(p,dir)=> p.a===0?{c:'konv',a:0}:{c:'unb',a:null} }
+];
+
+/* ---- Mini-Parser für eigene Funktionsterme (Shunting-Yard) ---- */
+function compileExpr(src){
+  let s=(src||'').trim().replace(/\*\*/g,'^').replace(/,/g,'.');
+  if(!s) throw new Error('Bitte einen Term eingeben.');
+  const FN={sin:Math.sin,cos:Math.cos,tan:Math.tan,asin:Math.asin,acos:Math.acos,atan:Math.atan,
+    sqrt:Math.sqrt,exp:Math.exp,ln:Math.log,lg:x=>Math.log(x)/Math.LN10,log:x=>Math.log(x)/Math.LN10,abs:Math.abs,sign:Math.sign};
+  const CO={pi:Math.PI,e:Math.E};
+  const tk=[]; let i=0;
+  while(i<s.length){ const c=s[i];
+    if(c===' '){ i++; continue; }
+    if(/[0-9.]/.test(c)){ let j=i+1; while(j<s.length&&/[0-9.]/.test(s[j]))j++; tk.push({t:'num',v:parseFloat(s.slice(i,j))}); i=j; continue; }
+    if(/[a-zA-Z]/.test(c)){ let j=i+1; while(j<s.length&&/[a-zA-Z0-9]/.test(s[j]))j++; const nm=s.slice(i,j).toLowerCase();
+      if(nm==='x') tk.push({t:'x'}); else if(nm in CO) tk.push({t:'num',v:CO[nm]});
+      else if(nm in FN) tk.push({t:'fn',v:nm}); else throw new Error('Unbekannt: „'+nm+'"'); i=j; continue; }
+    if('+-*/^'.includes(c)){ tk.push({t:'op',v:c}); i++; continue; }
+    if(c==='('){ tk.push({t:'lp'}); i++; continue; }
+    if(c===')'){ tk.push({t:'rp'}); i++; continue; }
+    throw new Error('Ungültiges Zeichen: „'+c+'"');
+  }
+  // implizite Multiplikation: 2x, 3(x+1), x sin(x)… -> mit ·
+  const T2=[]; const isVal=k=>k&&(k.t==='num'||k.t==='x'||k.t==='rp'); const startVal=k=>k&&(k.t==='num'||k.t==='x'||k.t==='fn'||k.t==='lp');
+  for(let k=0;k<tk.length;k++){ if(k>0&&isVal(tk[k-1])&&startVal(tk[k])) T2.push({t:'op',v:'*'}); T2.push(tk[k]); }
+  const prec={'+':1,'-':1,'*':2,'/':2,'u':3,'^':4}, rassoc={'^':1,'u':1};
+  const out=[], ops=[]; let prev=null;
+  for(const t of T2){
+    if(t.t==='num'||t.t==='x'){ out.push(t); prev=t; }
+    else if(t.t==='fn'){ ops.push(t); prev=t; }
+    else if(t.t==='op'){ let o=t.v;
+      if(o==='-'&&(prev===null||prev.t==='op'||prev.t==='lp')) o='u';
+      if(o==='u'){ ops.push({t:'op',v:'u'}); prev={t:'op'}; }
+      else { while(ops.length){ const tp=ops[ops.length-1];
+          if(tp.t==='lp') break;
+          const p2=tp.t==='fn'?9:prec[tp.v], p1=prec[o];
+          if(tp.t==='fn' || (rassoc[o]? p1<p2 : p1<=p2)) out.push(ops.pop()); else break; }
+        ops.push({t:'op',v:o}); prev={t:'op'}; } }
+    else if(t.t==='lp'){ ops.push(t); prev=t; }
+    else if(t.t==='rp'){ while(ops.length&&ops[ops.length-1].t!=='lp') out.push(ops.pop());
+      if(!ops.length) throw new Error('Klammern passen nicht.'); ops.pop();
+      if(ops.length&&ops[ops.length-1].t==='fn') out.push(ops.pop()); prev={t:'rp'}; } }
+  while(ops.length){ const o=ops.pop(); if(o.t==='lp') throw new Error('Klammern passen nicht.'); out.push(o); }
+  if(!out.length) throw new Error('Term unvollständig.');
+  return function(x){ const st=[];
+    for(const t of out){
+      if(t.t==='num') st.push(t.v);
+      else if(t.t==='x') st.push(x);
+      else if(t.t==='fn') st.push(FN[t.v](st.pop()));
+      else if(t.t==='op'){ if(t.v==='u') st.push(-st.pop());
+        else { const b=st.pop(), a=st.pop();
+          st.push(t.v==='+'?a+b:t.v==='-'?a-b:t.v==='*'?a*b:t.v==='/'?a/b:Math.pow(a,b)); } } }
+    return st[st.length-1]; };
+}
+// Verhalten einer eigenen Funktion numerisch schätzen (bewusst nur eine Schätzung!)
+function customCat(f, dir=1){
+  const base=[1e2,1e3,1e4,1e5,1e6,1e7,1e8];
+  const xs=base.map(x=>dir>0?x:-x);
+  const fin=xs.map(f).filter(y=>isFinite(y));
+  if(fin.length<4) return {c:'unb',a:null,est:true};
+  const n=fin.length, last=fin[n-1], diffs=[];
+  for(let k=1;k<n;k++) diffs.push(fin[k]-fin[k-1]);
+  const ld=Math.abs(diffs[n-2]);
+  if(ld < Math.max(1e-6, Math.abs(last)*1e-4) && ld<=Math.abs(diffs[n-3]))
+    return {c:'konv', a:Math.abs(last)<1e-3?0:last, est:true};
+  if(diffs.every(d=>d>0)) return {c:'best',a:Infinity,est:true};
+  if(diffs.every(d=>d<0)) return {c:'best',a:-Infinity,est:true};
+  return {c:'unb',a:null,est:true};
+}
+
+/* ================= s0 · Explorer ================= */
+const EXP=(()=>{
+  const P=makePlot($('#expCv'), {grid:'#3c497a'});
+  const sel=$('#expType'), pbox=$('#expParams'), termEl=$('#expTerm');
+  let T=TYPES[0], p={}, F=null, revealed=false, curX=null, dir=1;
+  let customMode=false, Fcustom=null, catCustom=null, customType=null;
+  const curCat=()=>T.cat(p,dir);
+  const definedForDir=()=>!(T.posOnly && dir<0);
+  function drawNotDefined(){
+    P.clear(); P.axes(); const ctx=P.ctx; ctx.save();
+    ctx.fillStyle='#9aa6c8'; ctx.font='14px "Segoe UI",Roboto,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('für x → −∞ nicht definiert', P.W/2, P.H/2); ctx.restore();
+  }
+  sel.innerHTML=TYPES.map((t,i)=>`<option value="${i}">${t.name}</option>`).join('')
+    +`<option value="custom">✎ Eigene Funktion eingeben …</option>`;
+  function enterCustom(){
+    customMode=true;
+    pbox.innerHTML=`
+      <div class="slider-row" style="align-items:center">
+        <label for="expCustomIn">f(x) =</label>
+        <input type="text" id="expCustomIn" style="flex:1;min-width:170px" placeholder="z. B.  3 - 1/x   ·   x^2 - 5   ·   0.5^x   ·   (2x+1)/(x-4)">
+      </div>
+      <div class="row" style="gap:8px;align-items:center">
+        <span class="small muted" style="margin-right:auto">erlaubt: + − * / ^ ( ) x, sin cos tan, sqrt, ln, lg, exp, abs, pi, e</span>
+        <button class="btn small" id="expCustomGo">zeichnen</button>
+      </div>
+      <div class="msg no" id="expCustomErr" style="min-height:0;margin-top:4px"></div>`;
+    const inp=$('#expCustomIn'), go=$('#expCustomGo'), err=$('#expCustomErr');
+    const build=()=>{
+      err.textContent='';
+      let fn;
+      try{ fn=compileExpr(inp.value); const t=fn(2); if(typeof t!=='number'||Number.isNaN(t)) throw new Error('Term liefert keinen Wert.'); }
+      catch(e){ err.textContent='⚠ '+e.message; return; }
+      Fcustom=fn;
+      customType={ id:'custom', params:[], pvx:10, f:()=>Fcustom, cat:(pp,d)=>customCat(Fcustom, d),
+        term:(pp,v='x')=>{ let raw=(inp.value.trim()||'…').replace(/\*/g,'·');
+          return v==='x'? raw : raw.replace(/(?<![a-zA-Z0-9_])x(?![a-zA-Z0-9_])/g, v); } };
+      T=customType; p={}; refresh(true);
+    };
+    go.onclick=build;
+    inp.addEventListener('keydown',e=>{ if(e.key==='Enter') build(); });
+    termEl.innerHTML='f(x) = …'; P.clear(); P.axes();
+    resetAnim(); $('#expX').textContent='–'; clearFx();
+    resetCaseBtns(); $$('#s0 .casebtn').forEach(b=>b.disabled=true);
+    $('#expMsg').textContent=''; $('#expMsg').className='msg';
+    inp.focus();
+  }
+  function buildParams(){
+    pbox.innerHTML=T.params.map(pr=>`
+      <div class="slider-row">
+        <label>${pr.lbl}</label>
+        <input type="range" data-k="${pr.k}" min="${pr.min}" max="${pr.max}" step="${pr.step}" value="${pr.def}">
+        <span class="sv" data-v="${pr.k}"></span>
+      </div>`).join('');
+    T.params.forEach(pr=>{ p[pr.k]=pr.def; });
+    $$('input[type=range]',pbox).forEach(inp=>{
+      inp.oninput=()=>{ p[inp.dataset.k]=parseFloat(inp.value); syncLabels(); refresh(true); };
+    });
+    syncLabels();
+  }
+  function syncLabels(){ $$('[data-v]',pbox).forEach(s=>{ s.textContent=nf(p[s.dataset.v]); }); }
+  const pvx=()=>T.pvx||10;
+  const preView=(y0,y1)=> dir>0? {x0:0,x1:pvx(),y0,y1} : {x0:-pvx(),x1:0,y0,y1};
+  function fitY(){
+    let lo=Infinity, hi=-Infinity, P0=pvx();
+    const a0=dir>0?0.2:-P0, a1=dir>0?P0:-0.2, st=P0/100;
+    for(let x=a0;x<=a1+1e-9;x+=st){ const y=F(x); if(isFinite(y)){ lo=Math.min(lo,y); hi=Math.max(hi,y);} }
+    if(!isFinite(lo)){ lo=-2; hi=8; }
+    const cat=curCat();
+    if(cat.c==='konv'&&isFinite(cat.a)){ lo=Math.min(lo,cat.a); hi=Math.max(hi,cat.a); }
+    let pad=(hi-lo)*0.18+0.5; lo-=pad; hi+=pad;
+    if(hi-lo<3){ const m=(hi+lo)/2; lo=m-1.5; hi=m+1.5; }
+    return {y0:lo,y1:hi};
+  }
+  function refresh(resetView){
+    F=T.f(p); termEl.innerHTML='f(x) = '+T.term(p);
+    if(resetView){
+      revealed=false; curX=null; resetAnim();
+      $('#expX').textContent='–'; clearFx(); updatePlayLabel();
+      $('#expMsg').textContent=''; $('#expMsg').className='msg';
+      if(!definedForDir()){
+        P.setView(preView(-1,5)); drawNotDefined();
+        resetCaseBtns(); $$('#s0 .casebtn').forEach(b=>b.disabled=true);
+        $('#expPlay').disabled=true; $('#expPause').disabled=true;
+        $('#expMsg').innerHTML='Diese Funktion ist für x → −∞ nicht definiert (√x nur für x ≥ 0). Schalte auf x → +∞ oder wähle eine andere Funktion.';
+        return;
+      }
+      $('#expPlay').disabled=false; resetCaseBtns();
+      const fy=fitY(); P.setView(preView(fy.y0,fy.y1));
+    }
+    draw();
+  }
+  function draw(){
+    if(!definedForDir()){ drawNotDefined(); return; }
+    P.clear(); P.axes();
+    const cat=curCat();
+    if(revealed&&cat.c==='konv'&&isFinite(cat.a)) P.hline(cat.a,'#5fe39a','y = a '+(cat.est?'≈':'=')+' '+(Math.abs(cat.a)<1e-3?'0':nf(cat.a,cat.est?4:2)));
+    P.fn(F,'#5cd6ff',2.4);
+    if(curX!=null) P.marker(curX,F(curX),'#ffcf5c');
+  }
+  // Dynamische y-Anpassung: bei über jede Grenze wachsenden (nicht konvergenten) Funktionen
+  // wird die y-Skala mitgezogen, damit der wandernde Funktionswert sichtbar bleibt.
+  function fitYDynamic(loX,hiX,markX){
+    const ys=[], N=200;
+    for(let i=0;i<=N;i++){ const y=F(loX+(hiX-loX)*i/N); if(isFinite(y)) ys.push(y); }
+    const yc=F(markX);
+    if(!ys.length){ const c=isFinite(yc)?yc:0; return {y0:Math.min(0,c)-1,y1:Math.max(0,c)+1}; }
+    // Pol-Spitzen kappen: Grenze am 97. Perzentil der Beträge (Hüllkurve bleibt, Ausreißer fliegen raus)
+    const mags=ys.map(Math.abs).sort((a,b)=>a-b);
+    const cap=mags[Math.floor(mags.length*0.97)]*1.6 + 1;
+    let lo=Infinity, hi=-Infinity;
+    for(const y of ys){ if(Math.abs(y)<=cap){ lo=Math.min(lo,y); hi=Math.max(hi,y); } }
+    if(isFinite(yc) && Math.abs(yc)<=cap){ lo=Math.min(lo,yc); hi=Math.max(hi,yc); }
+    lo=Math.min(lo,0); hi=Math.max(hi,0);                // x-Achse einschließen
+    const pad=(hi-lo)*0.1+0.5; return {y0:lo-pad,y1:hi+pad};
+  }
+  // Readout: aktuelle Zahl in den Term einsetzen — z. B.  f(600) = 1/600 + 2 = 2,0017
+  const fmtX=x=>nf(x, Math.abs(x)<20?1:0);
+  function renderFx(x){
+    const xs=fmtX(x), xv=(x<0? '('+xs+')' : xs);
+    const y=F(x), ys=isFinite(y)? nf(y, Math.abs(y)<1000?4:0) : '–';
+    $('#expFx').innerHTML=`f(${xs}) = <span class="sub">${T.term(p, xv)}</span> = <b>${ys}</b>`;
+  }
+  const clearFx=()=>{ $('#expFx').innerHTML='f(x) = …'; };
+
+  // Pausierbare Animation mit einstellbarem Tempo
+  const DUR=6500, XA=8, XB=600;                 // Basisdauer (Tempo „mittel"), x von 8 → 600
+  let animT=0, speed=1, running=false, rafId=null, lastTs=0, animGrows=false, animFy=null;
+  const xAt=t=>{ const mag=XA*Math.pow(XB/XA,t); return dir>0?mag:-mag; };
+  function renderAt(t){
+    const x=xAt(t);
+    const fy = animGrows ? fitYDynamic(Math.min(0,x), Math.max(0,x), x) : animFy;
+    P.setView(dir>0?{x0:0,x1:x,y0:fy.y0,y1:fy.y1}:{x0:x,x1:0,y0:fy.y0,y1:fy.y1});
+    curX=x; draw();
+    $('#expX').textContent=fmtX(x); renderFx(x);
+  }
+  function tick(ts){
+    if(!running) return;
+    if(!lastTs) lastTs=ts;
+    animT += ((ts-lastTs)/DUR)*speed; lastTs=ts;
+    if(animT>=1){ animT=1; renderAt(1); stopAnim(true); return; }
+    renderAt(animT);
+    rafId=requestAnimationFrame(tick);
+  }
+  function startAnim(){
+    if(running||!definedForDir()) return;
+    if(animT>=1) animT=0;
+    if(animT===0){ revealed=false; resetCaseBtns(); animFy=fitY(); animGrows=curCat().c!=='konv'; }
+    running=true; lastTs=0; rafId=requestAnimationFrame(tick);
+    $('#expPlay').disabled=true; $('#expPause').disabled=false;
+  }
+  function pauseAnim(){
+    running=false; if(rafId) cancelAnimationFrame(rafId); rafId=null;
+    $('#expPause').disabled=true; $('#expPlay').disabled=false; updatePlayLabel();
+  }
+  function stopAnim(finished){
+    running=false; if(rafId) cancelAnimationFrame(rafId); rafId=null;
+    if(finished) animT=0;                        // beim nächsten Start wieder von vorn
+    $('#expPause').disabled=true; $('#expPlay').disabled=false; updatePlayLabel();
+  }
+  function resetAnim(){
+    running=false; if(rafId) cancelAnimationFrame(rafId); rafId=null; animT=0;
+    $('#expPause').disabled=true;
+  }
+  function resetCaseBtns(){ $$('#s0 .casebtn').forEach(b=>{ b.className='casebtn '+b.dataset.c[0]; b.disabled=false; }); }
+  function classify(pick){
+    if(!definedForDir()) return;
+    const cat=curCat(), correct=cat.c, est=!!cat.est;
+    $$('#s0 .casebtn').forEach(b=>{
+      b.disabled=true;
+      if(b.dataset.c===correct) b.classList.add('ok');
+      else if(b.dataset.c===pick) b.classList.add('no');
+    });
+    const msg=$('#expMsg');
+    const names={konv:'f(x) nähert sich einem Wert an',best:'f(x) wächst über jede Grenze',unb:'f(x) verhält sich unbestimmt'};
+    const aStr = correct==='konv' ? (Math.abs(cat.a)<1e-3?'0':nf(cat.a, est?4:2)) : '';
+    const estTag = est ? ' <span class="small muted">(aus den Werten für große x geschätzt – am Term absichern!)</span>' : '';
+    if(pick===correct){
+      revealed=true;
+      let extra = correct==='konv' ? `f(x) nähert sich dem Wert a ${est?'≈':'='} <b>${aStr}</b> an.`
+                : correct==='best' ? `f(x) wächst ${cat.a>0?'nach +∞':'nach −∞'} über jede Grenze.`
+                : 'f(x) legt sich auf keinen Wert fest.';
+      msg.innerHTML=(est?'✓ Passt: ':'✓ Richtig: ')+extra+estTag;
+      msg.className='msg ok'; markDone('s0');
+    } else {
+      msg.innerHTML='✗ Nicht ganz. '+(est?'Die Werte für große x deuten auf':'Richtig ist')+': <b>'+names[correct]+'</b>. Probiere ▶ nochmal und achte auf die Zahlen rechts.'+estTag;
+      msg.className='msg no'; revealed=(correct==='konv');
+    }
+    draw();
+  }
+  sel.onchange=()=>{
+    if(sel.value==='custom'){ enterCustom(); }
+    else { customMode=false; T=TYPES[parseInt(sel.value)]; buildParams(); refresh(true); }
+  };
+  function updatePlayLabel(){
+    $('#expPlay').textContent = (animT>0 && animT<1) ? '▶ weiter'
+      : (dir>0 ? '▶ x immer größer' : '▶ x immer kleiner');
+  }
+  $('#expPlay').onclick=startAnim;
+  $('#expPause').onclick=pauseAnim;
+  $('#expReset').onclick=()=>refresh(true);
+  $$('#s0 .casebtn').forEach(b=>b.onclick=()=>classify(b.dataset.c));
+  $$('#dirToggle .dirbtn').forEach(b=>b.onclick=()=>{
+    dir=parseInt(b.dataset.dir);
+    $$('#dirToggle .dirbtn').forEach(x=>x.classList.toggle('active', x===b));
+    refresh(true);
+  });
+  $$('#speedToggle .dirbtn').forEach(b=>b.onclick=()=>{
+    speed=parseFloat(b.dataset.sp);
+    $$('#speedToggle .dirbtn').forEach(x=>x.classList.toggle('active', x===b));
+  });
+  buildParams(); refresh(true);
+  return {};
+})();
+
+/* ================= Einstieg · Abkühlkurve ================= */
+(function(){
+  const cv=$('#introCv'); if(!cv) return;
+  const P=makePlot(cv, {grid:'#3c497a'});
+  const Temp=t=>20+15*Math.pow(.85,t);
+  P.setView({x0:0,x1:30,y0:16,y1:37});
+  P.clear(); P.axes();
+  P.hline(20,'#5fe39a','Umgebung 20 °C');
+  P.fn(Temp,'#ff9d5c',2.8);
+  P.marker(0,35,'#ffcf5c');           // Start: 35 °C bei t = 0
+  const go=$('#einGo'); if(go) go.onclick=()=>document.getElementById('s0').scrollIntoView({behavior:'smooth',block:'start'});
+})();
+
+/* ================= s1 · Illustrationen ================= */
+(function(){
+  const A=makePlot($('#ill0')); A.setView({x0:0,x1:12,y0:-1,y1:5});
+  A.clear(); A.axes(); A.hline(3,'#5fe39a','a = 3'); A.fn(x=>3+3/(x+0.6),'#5cd6ff',2.2);
+  const B=makePlot($('#ill1')); B.setView({x0:0,x1:12,y0:-1,y1:9});
+  B.clear(); B.axes(); B.fn(x=>0.7*x,'#5cd6ff',2.2); B.marker(12,8.4,'#ff9d5c');
+  const C=makePlot($('#ill2')); C.setView({x0:0,x1:12,y0:-3,y1:3});
+  C.clear(); C.axes(); C.fn(x=>2*Math.sin(1.3*x),'#5cd6ff',2.2);
+})();
+
+/* ================= s2 · Zuordnen-Trainer ================= */
+(function(){
+  // dir:-1  →  Aufgabe untersucht x → −∞ (Standard ist +∞)
+  const items=[
+    {term:'f(x) = 3 − '+fr('1','x'), f:x=>3-1/x, view:{x0:0,x1:14,y0:0,y1:5}, c:'konv', a:3},
+    {term:'f(x) = x² − 5', f:x=>x*x-5, view:{x0:0,x1:8,y0:-6,y1:20}, c:'best', a:Infinity},
+    {term:'f(x) = 2 · 0,5'+sup('x'), f:x=>2*Math.pow(.5,x), view:{x0:0,x1:10,y0:-.5,y1:2.2}, c:'konv', a:0},
+    {term:'f(x) = 2'+sup('x'), dir:-1, f:x=>Math.pow(2,x), view:{x0:-10,x1:0,y0:-.5,y1:2.5}, c:'konv', a:0},
+    {term:'f(x) = 2 − '+fr('4','x'), f:x=>2-4/x, view:{x0:0,x1:16,y0:-3,y1:4}, c:'konv', a:2},
+    {term:'f(x) = '+rt('x')+' + 2', f:x=>Math.sqrt(x)+2, view:{x0:0,x1:30,y0:0,y1:9}, c:'best', a:Infinity},
+    {term:'f(x) = x³ − 2x', dir:-1, f:x=>x*x*x-2*x, view:{x0:-5,x1:0,y0:-70,y1:8}, c:'best', a:-Infinity},
+    {term:'f(x) = 2 − x²', f:x=>2-x*x, view:{x0:0,x1:6,y0:-24,y1:4}, c:'best', a:-Infinity},
+    {term:'f(x) = 1,5 · sin(x)', f:x=>1.5*Math.sin(x), view:{x0:0,x1:16,y0:-2.2,y1:2.2}, c:'unb', a:null},
+    {term:'f(x) = 1 + '+fr('4','x'), dir:-1, f:x=>1+4/x, view:{x0:-16,x1:0,y0:-2,y1:4}, c:'konv', a:1},
+    {term:'f(x) = 4 − 3 · 0,7'+sup('x'), f:x=>4-3*Math.pow(.7,x), view:{x0:0,x1:16,y0:0,y1:5}, c:'konv', a:4},
+    {term:'f(x) = '+fr('5','x² + 1'), f:x=>5/(x*x+1), view:{x0:0,x1:10,y0:-.5,y1:5.5}, c:'konv', a:0}
+  ];
+  const mount=$('#zTrainer'); let solved=0;
+  $('#zTotal').textContent=items.length;
+  const limMarkup=d=>`<span class="lim"><span class="op">lim</span><span class="un">x→${d<0?'−':''}∞</span></span>`;
+  mount.innerHTML=items.map((it,i)=>`
+    <div class="task" data-i="${i}">
+      <div class="q">${it.term}</div>
+      <div class="row" style="margin-bottom:8px">
+        <button class="btn ghost small" data-graph="${i}">📈 Graph zeigen</button>
+      </div>
+      <div class="plotwrap graphbox hidden"><canvas width="470" height="230"></canvas></div>
+      <div class="ansrow">
+        <span style="font-size:16px">${limMarkup(it.dir||1)} f(x) =</span>
+        <input type="text" class="ain" inputmode="decimal" placeholder="Zahl a">
+        <span class="muted small">oder</span>
+        <button class="optbtn" data-v="inf">+∞</button>
+        <button class="optbtn" data-v="ninf">−∞</button>
+        <button class="optbtn" data-v="none">existiert nicht</button>
+        <button class="btn small chk">prüfen</button>
+      </div>
+      <div class="msg" data-msg="${i}"></div>
+    </div>`).join('');
+
+  $$('[data-graph]',mount).forEach(btn=>{
+    btn.onclick=()=>{
+      const i=+btn.dataset.graph, task=$$('.task',mount)[i], box=$('.graphbox',task);
+      box.classList.toggle('hidden');
+      if(!box.classList.contains('hidden') && !box.dataset.drawn){
+        const P=makePlot($('canvas',box)); P.setView(items[i].view); P.clear(); P.axes();
+        if(items[i].c==='konv'&&isFinite(items[i].a)) P.hline(items[i].a,'#5fe39a','a = '+nf(items[i].a));
+        P.fn(items[i].f,'#5cd6ff',2.2); box.dataset.drawn='1';
+        btn.textContent='📈 Graph ausblenden';
+      } else if(box.classList.contains('hidden')){ btn.textContent='📈 Graph zeigen'; }
+      else { btn.textContent='📈 Graph ausblenden'; }
+    };
+  });
+
+  // wahre Antwort eines Items als {kind, v}: konv -> Zahl, best -> +∞/−∞, unb -> existiert nicht
+  const trueAnswer=it=> it.c==='konv' ? {kind:'num', v:it.a}
+                      : it.c==='best' ? {kind: it.a>0?'inf':'ninf'}
+                      : {kind:'none'};
+  const ansText=(ta,d)=> ta.kind==='num' ? `${limMarkup(d)} f(x) = ${nf(ta.v)}`
+                   : ta.kind==='inf'  ? `${limMarkup(d)} f(x) = +∞`
+                   : ta.kind==='ninf' ? `${limMarkup(d)} f(x) = −∞`
+                   : `${limMarkup(d)} f(x) existiert nicht`;
+
+  $$('.task',mount).forEach((task,i)=>{
+    const it=items[i]; let selV=null;
+    const msg=$('[data-msg]',task), ain=$('.ain',task), opts=$$('.optbtn',task), chk=$('.chk',task);
+    opts.forEach(o=>o.onclick=()=>{
+      if(task.dataset.done) return;
+      selV = (selV===o.dataset.v)? null : o.dataset.v;      // umschaltbar
+      opts.forEach(x=>x.classList.toggle('sel', x.dataset.v===selV));
+      if(selV) ain.value='';                               // Option gewählt → Zahlenfeld leeren
+    });
+    ain.addEventListener('input',()=>{ if(ain.value){ selV=null; opts.forEach(x=>x.classList.remove('sel')); } });
+    ain.addEventListener('keydown',e=>{ if(e.key==='Enter') chk.click(); });
+    chk.onclick=()=>{
+      if(task.dataset.done) return;
+      let ans;
+      if(selV){ ans={kind:selV}; }
+      else {
+        const raw=(ain.value||'').replace(',','.').replace('−','-').trim();
+        if(raw===''){ msg.className='msg no'; msg.textContent='Bitte eine Zahl eintragen oder eine Option wählen.'; return; }
+        const num=parseFloat(raw);
+        if(!isFinite(num)){ msg.className='msg no'; msg.textContent='Das ist keine gültige Zahl.'; return; }
+        ans={kind:'num', v:num};
+      }
+      const ta=trueAnswer(it);
+      const ok = ans.kind==='num'&&ta.kind==='num' ? Math.abs(ans.v-ta.v)<1e-6 : ans.kind===ta.kind;
+      // Richtige Option grün, falsch gewählte Option rot
+      opts.forEach(o=>{ if(o.dataset.v===ta.kind) o.classList.add('ok');
+        else if(selV===o.dataset.v && !ok) o.classList.add('no'); });
+      finish(task,i,ok, ok? `Richtig! ${ansText(ta, it.dir||1)}.` : `Nicht ganz – richtig ist: ${ansText(ta, it.dir||1)}.`);
+    };
+  });
+
+  function finish(task,i,ok,text){
+    task.dataset.done='1';
+    $$('.optbtn',task).forEach(b=>b.disabled=true);
+    $('.ain',task).disabled=true; $('.chk',task).disabled=true;
+    const msg=$('[data-msg]',task);
+    msg.className='msg '+(ok?'ok':'no'); msg.innerHTML=(ok?'✓ ':'✗ ')+text;
+    if(ok && !task.dataset.scored){ task.dataset.scored='1'; solved++; $('#zScore').textContent=solved;
+      if(solved>=Math.ceil(items.length/2)) markDone('s2'); }
+  }
+})();
+
+/* ================= s3 · Ausschnitt-Falle (ganzrationale Funktion) ================= */
+(function(){
+  const P=makePlot($('#zoomCv'), {grid:'#3c497a'});
+  // f(x) = -0,0005·x·(x-40)²·(x-100): einfache Nullstelle 0, doppelte (Berührung) bei 40, dann -> -∞
+  const f=x=>-0.0005*x*(x-40)*(x-40)*(x-100);
+  const stages=[
+    {x1:38, note:'<b>Kleiner Ausschnitt:</b> Nach einem Maximum kommt der Graph zurück und <b>schmiegt sich der x-Achse an</b>. Sieht das nicht nach dem Grenzwert <b>0</b> aus?'},
+    {x1:65, note:'<b>Herausgezoomt:</b> Von wegen! Der Graph kommt der Achse ganz nahe, <b>berührt</b> sie (ein Minimum) und <b>steigt danach steil an</b>. Jetzt denkt man: geht er wohl gegen <b>+∞</b>?'},
+    {x1:105, note:'<b>Noch weiter:</b> Es kommt ein <b>zweites, noch höheres Maximum</b> – und danach fällt der Graph endgültig <b>über jede Grenze</b>. Erst jetzt sieht man die Wahrheit: <b>bestimmt divergent gegen −∞</b>.'}
+  ];
+  let stage=0, anim=null;
+  function fitRange(a,b){ let lo=Infinity,hi=-Infinity;
+    for(let i=0;i<=400;i++){ const x=a+(b-a)*i/400, y=f(x); if(isFinite(y)){lo=Math.min(lo,y);hi=Math.max(hi,y);} }
+    const pad=(hi-lo)*0.12+1; return {y0:lo-pad,y1:hi+pad}; }
+  function drawTo(x1){ const r=fitRange(0,x1); P.setView({x0:0,x1,y0:r.y0,y1:r.y1});
+    P.clear(); P.axes(); P.fn(f,'#5cd6ff',2.4); $('#zoomX').textContent=nf(x1, x1<10?1:0); }
+  function showStage(){ drawTo(stages[stage].x1);
+    $('#zoomStage').textContent=(stage+1)+' / '+stages.length;
+    $('#zoomNote').innerHTML=stages[stage].note;
+    // Funktionsterm erst auf der letzten Stufe verraten – ausmultipliziert, mit Hinweis auf den Vorfaktor
+    $('#zoomTerm').innerHTML = (stage===stages.length-1)
+      ? 'f(x) = −0,0005·x<sup>4</sup> + 0,09·x<sup>3</sup> − 4,8·x<sup>2</sup> + 80·x'
+        + '<br><span class="small muted">Über das Verhalten im Unendlichen entscheidet allein der '
+        + '<b>Vorfaktor −0,0005 vor der höchsten Potenz x<sup>4</sup></b>: negativ → <b>−∞</b>. '
+        + 'Die kleineren Summanden machen nur die „Dellen" in der Mitte.</span>'
+      : '';
+    $('#zoomOut').disabled=(stage>=stages.length-1); }
+  function goTo(s){ if(anim)anim(); const x0=stages[stage].x1, x1=stages[s].x1;
+    anim=animate(1500,t=>{ drawTo(x0*Math.pow(x1/x0,t)); },()=>{ stage=s; showStage(); }); }
+  showStage();
+  $('#zoomOut').onclick=()=>{ if(stage<stages.length-1) goTo(stage+1); };
+  $('#zoomBack').onclick=()=>{ goTo(0); };
+
+  // Quiz
+  const quiz=$('#zoomQuiz');
+  const opts=[{t:'bestimmt divergent gegen −∞ (der Summand −0,0005·x⁴ bestimmt das Ende).',ok:true},
+    {t:'konvergent gegen 0.',ok:false},
+    {t:'bestimmt divergent gegen +∞.',ok:false},
+    {t:'unbestimmt divergent (der Graph pendelt für immer).',ok:false}];
+  const view=shuffle(opts);
+  quiz.innerHTML=view.map((o,i)=>`<button class="opt" data-i="${i}">${o.t}</button>`).join('');
+  $$('.opt',quiz).forEach((b,i)=>b.onclick=()=>{
+    $$('.opt',quiz).forEach(x=>x.disabled=true);
+    if(view[i].ok){ b.classList.add('ok'); markDone('s3'); }
+    else { b.classList.add('no'); $$('.opt',quiz).forEach((x,j)=>{ if(view[j].ok) x.classList.add('ok'); }); }
+  });
+})();
+
+/* ================= s4 · Wie nahe? ================= */
+(function(){
+  const P=makePlot($('#naheCv'));
+  const BS=[0.5,0.2,0.1,0.01,0.0001];
+  const fns=[
+    {id:'r', name:'f(x) = 2 + 1/x   (a = 2)', a:2, f:x=>2+1/x, x0:b=>1/b, view:{x0:0,x1:30,y0:1,y1:4},
+     sol:b=>`|1/x| &lt; ${nf(b,4)}  ⇔  x &gt; 1/${nf(b,4)} = <b>${nf(1/b,0)}</b>`},
+    {id:'e', name:'f(x) = 0,5ˣ   (a = 0)', a:0, f:x=>Math.pow(.5,x), x0:b=>Math.log(b)/Math.log(.5), view:{x0:0,x1:20,y0:-.3,y1:1.6},
+     sol:b=>`0,5ˣ &lt; ${nf(b,4)}  ⇔  x &gt; log<sub>0,5</sub>(${nf(b,4)}) ≈ <b>${nf(Math.log(b)/Math.log(.5),2)}</b>`}
+  ];
+  const selFn=$('#naheFn'), selFn2=$('#naheFn2');
+  const optsHtml=fns.map((f,i)=>`<option value="${i}">${f.name}</option>`).join('');
+  selFn.innerHTML=optsHtml; selFn2.innerHTML=optsHtml;
+  let cur=fns[0], bi=2;
+  const slB=$('#naheB');
+  function draw(){
+    const b=BS[bi], a=cur.a;
+    P.setView(cur.view); P.clear(); P.axes();
+    P.band(a-b,a+b,'rgba(95,227,154,.14)');
+    P.hline(a,'#5fe39a','a = '+nf(a));
+    P.fn(cur.f,'#5cd6ff',2.4);
+    const x0=cur.x0(b); P.vline(x0,'#ffcf5c','x₀ ≈ '+nf(x0, x0<50?2:0));
+    $('#naheBv').textContent=nf(b,4);
+    $('#naheInfo').innerHTML=`Ab x &gt; <b>${nf(x0, x0<50?2:0)}</b> bleibt f(x) im grünen Streifen (Abstand zu a kleiner als ${nf(b,4)}).`;
+    // Tasks bauen für aktuelle Fn
+    buildTasks();
+  }
+  function buildTasks(){
+    const box=$('#naheTasks'); const b1=0.1, b2=0.0001;
+    const rows=[b1,b2].map((b,i)=>{
+      const x0=cur.x0(b);
+      return `<div class="chkrow" data-b="${b}">
+        <span>b = ${nf(b,4)}: &nbsp; ab x &gt;</span>
+        <input type="text" inputmode="decimal" placeholder="?">
+        <button class="btn small">prüfen</button>
+        <span class="msg" style="margin:0"></span>
+        <div style="flex-basis:100%"></div>
+        <details style="margin-top:0"><summary>Lösung</summary><div class="small" style="margin-top:4px">${cur.sol(b)}</div></details>
+      </div>`;
+    }).join('');
+    box.innerHTML=rows;
+    $$('.chkrow[data-b]',box).forEach(row=>{
+      const b=parseFloat(row.dataset.b), target=cur.x0(b);
+      const inp=$('input',row), msg=$('.msg',row), btn=$('button',row);
+      btn.onclick=()=>{
+        const val=parseFloat((inp.value||'').replace(',','.'));
+        if(!isFinite(val)){ msg.className='msg no';msg.style.margin=0; msg.textContent='Zahl eingeben'; return; }
+        // Toleranz: relativ, weil x0 sehr groß werden kann
+        const ok=Math.abs(val-target) <= Math.max(0.5, target*0.02);
+        msg.className='msg '+(ok?'ok':'no'); msg.style.margin=0;
+        msg.textContent= ok?'✓ richtig': '✗ nochmal';
+        if(ok) markDone('s4');
+      };
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter') btn.click(); });
+    });
+  }
+  function setType(i){ cur=fns[i]; selFn.value=i; selFn2.value=i; draw(); }
+  slB.oninput=()=>{ bi=parseInt(slB.value); draw(); };
+  selFn.onchange=()=>setType(parseInt(selFn.value));
+  selFn2.onchange=()=>setType(parseInt(selFn2.value));
+  draw();
+})();
+
+/* ================= s5 · b-Schlauch ================= */
+(function(){
+  const P=makePlot($('#schlauchCv'));
+  const f=x=>Math.pow(.5,x); const a=0;
+  const BS=[0.5,0.2,0.1,0.05,0.01,0.001,0.0001];
+  const sl=$('#schlauchB');
+  function x0For(b){ return Math.log(b)/Math.log(.5); } // 0,5^x < b
+  function draw(){
+    const b=BS[parseInt(sl.value)], x0=x0For(b);
+    // Fenster so wählen, dass x0 und Schlauch sichtbar
+    const xmax=Math.max(16, x0*1.6);
+    P.setView({x0:0,x1:xmax,y0:-0.35,y1:1.25});
+    P.clear(); P.axes();
+    P.band(a-b,a+b,'rgba(95,227,154,.18)');
+    P.hline(a,'#3a4468','a = 0');
+    P.hline(b,'#5fe39a','+b'); P.hline(-b,'#5fe39a','−b');
+    P.fn(f,'#5cd6ff',2.6);
+    P.vline(x0,'#ffcf5c','x₀ ≈ '+nf(x0,2));
+    $('#schlauchBv').textContent=nf(b,4);
+    $('#schlauchBout').textContent=nf(b,4);
+    $('#schlauchX0').textContent=nf(x0,2);
+    markDone('s5');
+  }
+  sl.oninput=draw; draw();
+})();
+</script>
+</body>
+</html>
